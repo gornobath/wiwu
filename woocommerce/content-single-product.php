@@ -114,13 +114,15 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
                   
                          $tipoProducto = wc_get_product($product->get_id());
                         echo 'tipo:  '.$tipoProducto->get_type();
-                      //mostrar_atributo_color_en_producto();
-                      if( $tipoProducto->get_type() ===  'simple'):
+           
+                      /* if( $tipoProducto->get_type() ===  'simple'):
                             woocommerce_template_single_add_to_cart();
                         elseif( $tipoProducto->get_type() ===  'variable'):
                             woocommerce_template_single_add_to_cart();
                         else: 
-                    endif;
+                    endif; */
+                    woocommerce_template_single_add_to_cart();
+                    
                         ?>
                     </div>
                 </div>
