@@ -109,21 +109,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
                     </div>
 
                     <div class="wiwu-product-banner-cont-info-add-to-cart">
-                        <?php 
-                        global $product;
-                  
-                         $tipoProducto = wc_get_product($product->get_id());
-                        echo 'tipo:  '.$tipoProducto->get_type();
-           
-                      /* if( $tipoProducto->get_type() ===  'simple'):
-                            woocommerce_template_single_add_to_cart();
-                        elseif( $tipoProducto->get_type() ===  'variable'):
-                            woocommerce_template_single_add_to_cart();
-                        else: 
-                    endif; */
-                    woocommerce_template_single_add_to_cart();
-                    
-                        ?>
+                        <?php woocommerce_template_single_add_to_cart(); ?>
                     </div>
                 </div>
             </div>
