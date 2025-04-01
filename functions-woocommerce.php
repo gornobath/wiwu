@@ -50,13 +50,10 @@ add_action('woocommerce_before_shop_loop_item_title', 'wiwu_mostrarWooImagenesPr
 add_action('woocommerce_before_single_product', 'wiwu_mostrarWooImagenesProductos', 20);
 
 
-
-
-
-
-
-
-
+/* ===============================================================
+*  FUNCION QUE MUESTRA EL CARRITO DE COMPRA
+*  ===============================================================*/
+add_shortcode( 'wiwu-cart', 'wiwu_mostrar_cart');
 function wiwu_mostrar_cart(){
     $html = '';
     $itemTextoCart = '';
@@ -125,23 +122,9 @@ function wiwu_mostrar_cart(){
     return $html;
 }
 
-add_shortcode( 'wiwu-cart', 'wiwu_mostrar_cart');
-
-/* ===========================================================
-* OCULTAR BREADCRUMBS DE LA PAGINA DE PRODUCTOS 
-* =========================================================== */
-
-
-
-function mi_seccion_personalizada() {
-    echo '<div class="mi-seccion">';
-    echo '<h3>Información Adicional</h3>';
-    echo '<p>Aquí puedes agregar contenido personalizado sobre el producto.</p>';
-    echo '</div>';
-}
-
-
-
+/* ===============================================================
+*  FUNCION QUE REORDENA CAMPOS DE LOS PRODUCTOS
+*  ===============================================================*/
 function reordenar_elementos_woocommerce() {
     remove_action('woocommerce_before_shop_loop_item_title', 'woocommerce_template_loop_product_thumbnail', 10);
     remove_action('woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart', 10);
@@ -162,7 +145,9 @@ function reordenar_elementos_woocommerce() {
 }
 add_action('woocommerce_before_shop_loop', 'reordenar_elementos_woocommerce');
 
-/* =============================== */
+/* ===============================================================
+*  FUNCION QUE MUESTRA EL CARRUSEL DE PRODUCTOS
+*  ===============================================================*/
 function wiwu_mustrarCaruselProductos(){
        // Definir los atributos del shortcode (puedes ajustarlos según sea necesario)
        $atts = shortcode_atts(
@@ -202,6 +187,10 @@ function wiwu_mustrarCaruselProductos(){
 
    
 }
+
+/* ===============================================================
+*  FUNCION QUE MUESTRA EL CARRUSEL DE LOS  PRODUCTOS RELACIONADOS
+*  ===============================================================*/
 
 add_shortcode( 'wiwu-carrusel-productos', 'wiwu_mustrarCaruselProductos' );
 
@@ -266,7 +255,7 @@ if ($query->have_posts()) {
                             ' . wp_kses_post(wiwu_custom_hover_product_images()) . '
                         </div>
                     </a>';
-        $output .= '<div class="add-to-cart">' . mi_boton_personalizado($product->get_id()) . '</div>';
+        $output .= '<div class="add-to-cart">' . wiwu_mi_boton_personalizado($product->get_id()) . '</div>';
         $output .= '<h2 class="woocommerce-loop-product__title">' . get_the_title() . '</h2>';
         $output .= '<span class="price">' . $product->get_price_html() . '</span>';
         $output .= '</div>'; // Cierra el div del producto
@@ -279,18 +268,17 @@ if ($query->have_posts()) {
     wp_reset_postdata();
 
     return $output;
-} else {
+    } else {
     return '<p>No hay productos relacionados disponibles.</p>';
 }
  
 
-
 }
-
+/* ===============================================================
+*  FUNCION CAMBIA EL TEXTO DEL BOTON DEL CARRITO DE LOS PRODUCTOS
+*  ===============================================================*/
 add_shortcode( 'wiwu-carrusel-productos-relacionados', 'wiwu_mostrarCaruselProductosRelacionados' );
-
-
-function mi_boton_personalizado($product_id) {
+function wiwu_mi_boton_personalizado($product_id) {
     $texto = '';
     $product = wc_get_product($product_id);
 
@@ -325,6 +313,9 @@ function mi_boton_personalizado($product_id) {
     return $add_to_cart_button;
 }
 
+/* ===============================================================
+*  FUNCION QUE MUESTRA EL CARRUSEL DE PRODUCTOS
+*  ===============================================================*/
 function wiwu_mostrar_carrusel_productos($args){
     ?>
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css"/>
@@ -352,7 +343,7 @@ function wiwu_mostrar_carrusel_productos($args){
                                     '.wp_kses_post(wiwu_custom_hover_product_images()).'
                                 </div>
                             </a>';
-                $output .= '<div class="add-to-cart">'.mi_boton_personalizado($product->get_id()).'</div>';
+                $output .= '<div class="add-to-cart">'.wiwu_mi_boton_personalizado($product->get_id()).'</div>';
                 $output .= '<h2 class="woocommerce-loop-product__title">' . get_the_title() . '</h2>';
                 $output .= '<span class="price">' . $product->get_price_html() . '</span>';
             $output .= '</div>'; 
@@ -369,8 +360,21 @@ function wiwu_mostrar_carrusel_productos($args){
     }
 }
 
-// Mostrar el atributo "color" con su descripción y slug
-function mostrar_atributo_color_en_producto() {
+
+/* ===============================================================
+*  FUNCION MUESTRA EL ATRIBUTO COLOR EN FORMA DE COLOR, TENIENDO 
+*  EN CUENTA QUE EL COLOR ES LA DESCRIPCION DEL PRODUCTO
+*  ===============================================================*/
+
+function wiwu_mostrar_atributo_color_en_producto() {
+    $color = '';
+    $colors = '';
+    $description = '';
+    $nombre = '';
+    $slug = '';
+    $term = '';
+    $tipoProducto = '';
+    
     global $product;
     $tipoProducto = wc_get_product( $product->get_id() );
     // Obtener el valor del atributo "color"
@@ -404,12 +408,12 @@ function mostrar_atributo_color_en_producto() {
         endif;
     endif;
 }
-add_action('woocommerce_before_add_to_cart_button', 'mostrar_atributo_color_en_producto', 20);
+add_action('woocommerce_before_add_to_cart_button', 'wiwu_mostrar_atributo_color_en_producto', 20);
 
-
-
+/* ===============================================================
+*  FUNCION MUESTRA EL COLOR SELECCIONADO EN EL CARRITO
+*  ===============================================================*/
 add_filter('woocommerce_add_cart_item_data', 'add_color_to_cart_item', 10, 3);
-
 function add_color_to_cart_item($cart_item_data, $product_id, $variation_id) {
     if (isset($_POST['pa_colores'])) {
         $color = sanitize_text_field($_POST['pa_colores']);
@@ -420,10 +424,12 @@ function add_color_to_cart_item($cart_item_data, $product_id, $variation_id) {
     return $cart_item_data;
 }
 
-// Mostrar el color seleccionado en el carrito
-add_filter('woocommerce_get_item_data', 'display_color_in_cart', 10, 2);
+/* ===============================================================
+*  FUNCION MUESTRA EL COLOR SELECCIONADO EN EL CARRITO
+*  ===============================================================*/
+add_filter('woocommerce_get_item_data', 'wiwu_mostrar_color_en_carrito', 10, 2);
 
-function display_color_in_cart($item_data, $cart_item) {
+function wiwu_mostrar_color_en_carrito($item_data, $cart_item) {
     if (isset($cart_item['color'])) {
         $item_data[] = array(
             'key'     => __('Color', 'woocommerce'),
@@ -434,16 +440,16 @@ function display_color_in_cart($item_data, $cart_item) {
     return $item_data;
 }
 
-// Mostrar el color en la página de detalles del pedido
-add_action('woocommerce_order_item_meta_end', 'display_color_in_order', 10, 3);
+/* ===============================================================
+*  FUNCION MUESTRA EL COLOR EN LOS DETALLES DEL PEDIDO
+*  ===============================================================*/
+add_action('woocommerce_order_item_meta_end', 'wiwu_mostrar_atributo_color_en_pedido', 10, 3);
 
-function display_color_in_order($item_id, $item, $order) {
+function wiwu_mostrar_atributo_color_en_pedido($item_id, $item, $order) {
     if ($color = $item->get_meta('color')) {
         echo '<p><strong>' . __('Color:', 'woocommerce') . '</strong> ' . esc_html($color) . '</p>';
     }
 }
-
-
 
 /* ===============================================================
 *  FUNCION QUE REORGANIZA LOS ATRIBUTOS DE LAS VARIABLES. PRINERO 
