@@ -372,35 +372,36 @@ function wiwu_mostrar_carrusel_productos($args){
 // Mostrar el atributo "color" con su descripción y slug
 function mostrar_atributo_color_en_producto() {
     global $product;
-    
+    $tipoProducto = wc_get_product( $product->get_id() );
     // Obtener el valor del atributo "color"
     $color = $product->get_attribute('colores');
-    
-    if ($color):
-        // Dividir el valor del atributo en varios colores si es que tiene más de uno
-        $colors = explode(', ', $color);
-        echo '<div class="wiwu-single-product-color-cont">';
-        foreach ($colors as $color_name) :
-            // Obtener el objeto del término del atributo "color" (por su nombre)
-            $term = get_term_by('name', $color_name, 'pa_colores');
-            
-            if ($term) :
-                // Obtener el slug y la descripción del término
-                $slug = $term->slug;
-                $nombre = $term->name;
-                $description = $term->description;
+    if( $tipoProducto->get_type() == 'simple'):
+        if ($color):
+            // Dividir el valor del atributo en varios colores si es que tiene más de uno
+            $colors = explode(', ', $color);
+            echo '<div class="wiwu-single-product-color-cont">';
+            foreach ($colors as $color_name) :
+                // Obtener el objeto del término del atributo "color" (por su nombre)
+                $term = get_term_by('name', $color_name, 'pa_colores');
                 
-                //echo '<p><strong>Slug:</strong> ' . esc_html($slug) . '</p>';
-                if ($description) :
-                    //echo '<div class="wiwu-single-product-color" style="background: '.esc_attr($description).'"></div>';
-                    echo '<label class="wiwu-single-product-color-label">';
-                    echo '<input type="radio" name="pa_colores" value="' . esc_attr($slug) . '" class="wiwu-single-product-color-radio" /> ';
-                        echo '<span class="wiwu-single-product-color" style="background-color: ' . esc_attr($term->description) . ';" data-color-name="'.esc_attr($nombre).'"></span>';
-                    echo '</label>';
+                if ($term) :
+                    // Obtener el slug y la descripción del término
+                    $slug = $term->slug;
+                    $nombre = $term->name;
+                    $description = $term->description;
+                    
+                    //echo '<p><strong>Slug:</strong> ' . esc_html($slug) . '</p>';
+                    if ($description) :
+                        //echo '<div class="wiwu-single-product-color" style="background: '.esc_attr($description).'"></div>';
+                        echo '<label class="wiwu-single-product-color-label">';
+                        echo '<input type="radio" name="pa_colores" value="' . esc_attr($slug) . '" class="wiwu-single-product-color-radio" /> ';
+                            echo '<span class="wiwu-single-product-color" style="background-color: ' . esc_attr($term->description) . ';" data-color-name="'.esc_attr($nombre).'"></span>';
+                        echo '</label>';
+                    endif;
                 endif;
-            endif;
-        endforeach;
-        echo '</div>';
+            endforeach;
+            echo '</div>';
+        endif;
     endif;
 }
 add_action('woocommerce_before_add_to_cart_button', 'mostrar_atributo_color_en_producto', 20);
@@ -442,141 +443,149 @@ function display_color_in_order($item_id, $item, $order) {
     }
 }
 
+/* add_filter('woocommerce_dropdown_variation_attribute_options_html', 'convert_select_to_radio', 10, 2);
 
-
-// Añadir formulario personalizado con botón de añadir al carrito
-add_action('woocommerce_after_add_to_cart_form', 'custom_variation_form_with_button', 20);
-function custom_variation_form_with_button() {
-    global $product;
-    
-    if ($product->is_type('variable')) {
-        $attributes = $product->get_variation_attributes();
-        $available_variations = $product->get_available_variations();
+function convert_select_to_radio($html, $args) {
+    if ($args['attribute'] == 'pa_colores') {
+        // Mantener el select original pero oculto
+        $original_html = str_replace(
+            '<select', 
+            '<select style="display:none !important"', 
+            $html
+        );
         
-        if ($attributes) {
-            wp_enqueue_script('wc-add-to-cart-variation');
+        $options   = $args['options'];
+        $product   = $args['product'];
+        $attribute = $args['attribute'];
+        $name      = 'attribute_' . sanitize_title($attribute);
+        
+        if (empty($options)) {
+            return $html;
+        }
+        
+        $radio_html = '<div class="wiwu-single-product-color-cont">';
+        
+        foreach ($options as $option) {
+            $term = get_term_by('slug', $option, $attribute);
+            $color_code = $term ? $term->description : '#fff';
+            $id = sanitize_title($option);
+            $checked = isset($_REQUEST[$name]) && $_REQUEST[$name] == $option ? 'checked' : '';
+        
+            $radio_html .= '<label class="wiwu-single-product-color-label">';
+            $radio_html .= '<input type="radio" name="'.$name.'_radio" value="' . esc_attr($option) . '" class="wiwu-single-product-color-radio" id="'.$id.'" '.$checked.'/> ';
+            $radio_html .= '<span class="wiwu-single-product-color" style="background-color: ' . esc_attr($color_code) . ';" data-color-name="'.esc_html($option).'"></span>';
+            $radio_html .= '</label>';
+        }
+        
+        $radio_html .= '</div>';
+        
+        // JavaScript para sincronizar radios con select
+        add_action('wp_footer', function() use ($name) {
             ?>
-            <div class="custom-variation-form-wrapper">
-                <form class="variations_form cart" method="post" enctype="multipart/form-data">
-                    <table class="variations" cellspacing="0">
-                        <tbody>
-                            <?php foreach ($attributes as $attribute_name => $options) : ?>
-                                <tr>
-                                    <td class="label">
-                                        <label for="<?php echo esc_attr(sanitize_title($attribute_name)); ?>">
-                                            <?php echo wc_attribute_label($attribute_name); ?>
-                                        </label>
-                                    </td>
-                                    <td class="value">
-                                        <?php
-                                        $selected = isset($_REQUEST['attribute_' . sanitize_title($attribute_name)]) 
-                                            ? wc_clean($_REQUEST['attribute_' . sanitize_title($attribute_name)]) 
-                                            : $product->get_variation_default_attribute($attribute_name);
-                                        
-                                        wc_dropdown_variation_attribute_options(array(
-                                            'options' => $options,
-                                            'attribute' => $attribute_name,
-                                            'product' => $product,
-                                            'selected' => $selected,
-                                            'class' => 'custom-variation-select'
-                                        ));
-                                        ?>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-
-                    <div class="single_variation_wrap">
-                        <div class="woocommerce-variation single_variation">
-                            <div class="woocommerce-variation-description"></div>
-                            <div class="woocommerce-variation-price">
-                                <span class="price"></span>
-                            </div>
-                            <div class="woocommerce-variation-availability"></div>
-                        </div>
-                        <div class="woocommerce-variation-add-to-cart variations_button">
-                            <?php 
-                            woocommerce_quantity_input(array(
-                                'min_value' => 1,
-                                'max_value' => $product->backorders_allowed() ? '' : $product->get_stock_quantity(),
-                                'input_value' => isset($_POST['quantity']) ? wc_stock_amount($_POST['quantity']) : 1
-                            )); 
-                            ?>
-                            <button type="submit" class="single_add_to_cart_button button alt">
-                                <?php echo esc_html($product->single_add_to_cart_text()); ?>
-                            </button>
-                            <input type="hidden" name="add-to-cart" value="<?php echo absint($product->get_id()); ?>" />
-                            <input type="hidden" name="product_id" value="<?php echo absint($product->get_id()); ?>" />
-                            <input type="hidden" name="variation_id" class="variation_id" value="0" />
-                        </div>
-                    </div>
-                </form>
-            </div>
-
-            <script type="text/javascript">
-                jQuery(document).ready(function($) {
-                    // Inicializar el manejo de variaciones de WooCommerce
-                    $('.variations_form').wc_variation_form();
-                    
-                    // Actualizar el botón cuando cambian las selecciones
-                    $('.variations_form').on('woocommerce_variation_select_change', function() {
-                        $('.single_add_to_cart_button').prop('disabled', false);
-                    });
-                    
-                    // Deshabilitar el botón inicialmente
-                    $('.single_add_to_cart_button').prop('disabled', true);
+            <script>
+            jQuery(document).ready(function($) {
+                $('input[name="<?php echo $name; ?>_radio"]').on('change', function() {
+                    $('select[name="<?php echo $name; ?>"]').val($(this).val()).trigger('change');
                 });
+            });
             </script>
             <?php
-        }
+        }, 100);
+        
+        return $original_html . $radio_html;
     }
+    
+    return $html;
+}
+ */
+
+
+
+ // 1. Ordenar los atributos para que colores aparezca primero
+add_filter('woocommerce_product_get_attributes', 'reorder_variation_attributes', 10, 2);
+function reorder_variation_attributes($attributes, $product) {
+    if ($product->is_type('variable')) {
+        $ordered_attributes = array();
+        
+        // Buscar y colocar primero el atributo de colores
+        if (isset($attributes['pa_colores'])) {
+            $ordered_attributes['pa_colores'] = $attributes['pa_colores'];
+            unset($attributes['pa_colores']);
+        }
+        
+        // Buscar y colocar segundo el atributo de medidas (ajusta el slug según tu caso)
+        if (isset($attributes['pa_medidas'])) {
+            $ordered_attributes['pa_medidas'] = $attributes['pa_medidas'];
+            unset($attributes['pa_medidas']);
+        }
+        
+        // Añadir el resto de atributos
+        foreach ($attributes as $key => $attribute) {
+            $ordered_attributes[$key] = $attribute;
+        }
+        
+        return $ordered_attributes;
+    }
+    
+    return $attributes;
 }
 
-// CSS para el formulario
-add_action('wp_head', 'custom_variation_form_css');
-function custom_variation_form_css() {
-    ?>
-    <style>
-        .custom-variation-form-wrapper {
-            margin: 20px 0;
-            padding: 20px;
-            border: 1px solid #e4e4e4;
-            background: #fafafa;
-            border-radius: 3px;
+// 2. Convertir el select de colores a radios (tu código modificado)
+add_filter('woocommerce_dropdown_variation_attribute_options_html', 'convert_select_to_radio', 10, 2);
+function convert_select_to_radio($html, $args) {
+    if ($args['attribute'] == 'pa_colores') {
+        // Mantener el select original pero oculto
+        $original_html = str_replace(
+            '<select', 
+            '<select style="display:none !important"', 
+            $html
+        );
+        
+        $options   = $args['options'];
+        $product   = $args['product'];
+        $attribute = $args['attribute'];
+        $name      = 'attribute_' . sanitize_title($attribute);
+        
+        if (empty($options)) {
+            return $html;
         }
-        .custom-variation-form-wrapper table.variations {
-            margin-bottom: 20px;
-            width: 100%;
+        
+        $radio_html = '<div class="wiwu-single-product-color-cont">';
+        
+        foreach ($options as $option) {
+            $term = get_term_by('slug', $option, $attribute);
+            $color_code = $term ? $term->description : '#fff';
+            $id = sanitize_title($option);
+            $checked = isset($_REQUEST[$name]) && $_REQUEST[$name] == $option ? 'checked' : '';
+        
+            $radio_html .= '<label class="wiwu-single-product-color-label">';
+            $radio_html .= '<input type="radio" name="'.$name.'_radio" value="' . esc_attr($option) . '" class="wiwu-single-product-color-radio" id="'.$id.'" '.$checked.'/> ';
+            $radio_html .= '<span class="wiwu-single-product-color" style="background-color: ' . esc_attr($color_code) . ';" data-color-name="'.esc_html($option).'"></span>';
+            $radio_html .= '</label>';
         }
-        .custom-variation-form-wrapper table.variations td.label {
-            width: 30%;
-            padding-right: 10px;
-            vertical-align: top;
-        }
-        .custom-variation-form-wrapper table.variations td.value {
-            width: 70%;
-        }
-        .custom-variation-form-wrapper select.custom-variation-select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 3px;
-        }
-        .custom-variation-form-wrapper .single_variation_wrap {
-            margin-top: 20px;
-        }
-        .custom-variation-form-wrapper .price {
-            font-size: 1.25em;
-            color: #77a464;
-            font-weight: bold;
-        }
-        .custom-variation-form-wrapper .woocommerce-variation-add-to-cart {
-            margin-top: 15px;
-        }
-        .custom-variation-form-wrapper .quantity {
-            margin-right: 10px;
-        }
-    </style>
-    <?php
+        
+        $radio_html .= '</div>';
+        
+        // JavaScript para sincronizar radios con select
+        add_action('wp_footer', function() use ($name) {
+            ?>
+            <script>
+            jQuery(document).ready(function($) {
+                $('input[name="<?php echo $name; ?>_radio"]').on('change', function() {
+                    $('select[name="<?php echo $name; ?>"]').val($(this).val()).trigger('change');
+                });
+                
+                // Sincronizar también al revés (por si acaso)
+                $('select[name="<?php echo $name; ?>"]').on('change', function() {
+                    $('input[name="<?php echo $name; ?>_radio"][value="'+$(this).val()+'"]').prop('checked', true);
+                });
+            });
+            </script>
+            <?php
+        }, 100);
+        
+        return $original_html . $radio_html;
+    }
+    
+    return $html;
 }
