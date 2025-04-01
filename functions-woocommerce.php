@@ -443,67 +443,14 @@ function display_color_in_order($item_id, $item, $order) {
     }
 }
 
-/* add_filter('woocommerce_dropdown_variation_attribute_options_html', 'convert_select_to_radio', 10, 2);
-
-function convert_select_to_radio($html, $args) {
-    if ($args['attribute'] == 'pa_colores') {
-        // Mantener el select original pero oculto
-        $original_html = str_replace(
-            '<select', 
-            '<select style="display:none !important"', 
-            $html
-        );
-        
-        $options   = $args['options'];
-        $product   = $args['product'];
-        $attribute = $args['attribute'];
-        $name      = 'attribute_' . sanitize_title($attribute);
-        
-        if (empty($options)) {
-            return $html;
-        }
-        
-        $radio_html = '<div class="wiwu-single-product-color-cont">';
-        
-        foreach ($options as $option) {
-            $term = get_term_by('slug', $option, $attribute);
-            $color_code = $term ? $term->description : '#fff';
-            $id = sanitize_title($option);
-            $checked = isset($_REQUEST[$name]) && $_REQUEST[$name] == $option ? 'checked' : '';
-        
-            $radio_html .= '<label class="wiwu-single-product-color-label">';
-            $radio_html .= '<input type="radio" name="'.$name.'_radio" value="' . esc_attr($option) . '" class="wiwu-single-product-color-radio" id="'.$id.'" '.$checked.'/> ';
-            $radio_html .= '<span class="wiwu-single-product-color" style="background-color: ' . esc_attr($color_code) . ';" data-color-name="'.esc_html($option).'"></span>';
-            $radio_html .= '</label>';
-        }
-        
-        $radio_html .= '</div>';
-        
-        // JavaScript para sincronizar radios con select
-        add_action('wp_footer', function() use ($name) {
-            ?>
-            <script>
-            jQuery(document).ready(function($) {
-                $('input[name="<?php echo $name; ?>_radio"]').on('change', function() {
-                    $('select[name="<?php echo $name; ?>"]').val($(this).val()).trigger('change');
-                });
-            });
-            </script>
-            <?php
-        }, 100);
-        
-        return $original_html . $radio_html;
-    }
-    
-    return $html;
-}
- */
 
 
-
- // 1. Ordenar los atributos para que colores aparezca primero
-add_filter('woocommerce_product_get_attributes', 'reorder_variation_attributes', 10, 2);
-function reorder_variation_attributes($attributes, $product) {
+/* ===============================================================
+*  FUNCION QUE REORGANIZA LOS ATRIBUTOS DE LAS VARIABLES. PRINERO 
+*  APAREZCA EL COLOR Y LUEGO LAS MEDIDAS
+*  ===============================================================*/
+add_filter('woocommerce_product_get_attributes', 'wiwu_reorganizar_atributos_variaciones', 10, 2);
+function wiwu_reorganizar_atributos_variaciones($attributes, $product) {
     if ($product->is_type('variable')) {
         $ordered_attributes = array();
         
@@ -530,11 +477,14 @@ function reorder_variation_attributes($attributes, $product) {
     return $attributes;
 }
 
-// 2. Convertir el select de colores a radios (tu código modificado)
-add_filter('woocommerce_dropdown_variation_attribute_options_html', 'convert_select_to_radio', 10, 2);
-function convert_select_to_radio($html, $args) {
-    if ($args['attribute'] == 'pa_colores') {
-        // Mantener el select original pero oculto
+
+/* ===============================================================
+*  FUNCION CONVIERTE EL SELECTE DEL ATRIBITO COLOR POR UN RADIO
+*  ===============================================================*/
+add_filter('woocommerce_dropdown_variation_attribute_options_html', 'wiwu_convertir_select_a_radio_del_atributo_color', 10, 2);
+function wiwu_convertir_select_a_radio_del_atributo_color($html, $args) {
+    if ($args['attribute'] == 'pa_colores') :
+
         $original_html = str_replace(
             '<select', 
             '<select style="display:none !important"', 
@@ -545,7 +495,7 @@ function convert_select_to_radio($html, $args) {
         $product   = $args['product'];
         $attribute = $args['attribute'];
         $name      = 'attribute_' . sanitize_title($attribute);
-        
+
         if (empty($options)) {
             return $html;
         }
@@ -559,25 +509,22 @@ function convert_select_to_radio($html, $args) {
             $checked = isset($_REQUEST[$name]) && $_REQUEST[$name] == $option ? 'checked' : '';
         
             $radio_html .= '<label class="wiwu-single-product-color-label">';
-            $radio_html .= '<input type="radio" name="'.$name.'_radio" value="' . esc_attr($option) . '" class="wiwu-single-product-color-radio" id="'.$id.'" '.$checked.'/> ';
+            $radio_html .= '<input type="radio" name="'.esc_attr($name).'" value="' . esc_attr($option) . '" class="wiwu-single-product-color-radio" id="'.esc_attr($id).'" '.esc_attr($checked).'/> ';
             $radio_html .= '<span class="wiwu-single-product-color" style="background-color: ' . esc_attr($color_code) . ';" data-color-name="'.esc_html($option).'"></span>';
             $radio_html .= '</label>';
         }
         
         $radio_html .= '</div>';
         
-        // JavaScript para sincronizar radios con select
+        // JavaScript para sincronizar radios con select (opcional, pero útil para compatibilidad)
         add_action('wp_footer', function() use ($name) {
             ?>
             <script>
             jQuery(document).ready(function($) {
-                $('input[name="<?php echo $name; ?>_radio"]').on('change', function() {
-                    $('select[name="<?php echo $name; ?>"]').val($(this).val()).trigger('change');
-                });
-                
-                // Sincronizar también al revés (por si acaso)
-                $('select[name="<?php echo $name; ?>"]').on('change', function() {
-                    $('input[name="<?php echo $name; ?>_radio"][value="'+$(this).val()+'"]').prop('checked', true);
+                // No es necesario sincronizar manualmente si usas el mismo 'name'
+                // Pero lo dejamos por si hay otros scripts que dependen del select
+                $('input[name="<?php echo esc_js($name); ?>"]').on('change', function() {
+                    $('select[name="<?php echo esc_js($name); ?>"]').val($(this).val()).trigger('change');
                 });
             });
             </script>
@@ -585,7 +532,7 @@ function convert_select_to_radio($html, $args) {
         }, 100);
         
         return $original_html . $radio_html;
-    }
+    endif;
     
     return $html;
 }
