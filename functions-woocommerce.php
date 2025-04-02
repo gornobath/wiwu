@@ -194,34 +194,24 @@ function wiwu_mustrarCaruselProductos(){
 
 add_shortcode( 'wiwu-carrusel-productos', 'wiwu_mustrarCaruselProductos' );
 
+add_shortcode( 'wiwu-carrusel-productos-relacionados', 'wiwu_mostrarCaruselProductosRelacionados' );
 function  wiwu_mostrarCaruselProductosRelacionados(){
     ?>
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css"/>
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
     <?php 
-    global $product;
 
-if (!$product) {
-    return '<p>Producto no encontrado.</p>';
-}
-
-$related_ids = wc_get_related_products($product->get_id(), $atts['limit']); 
-
-if (empty($related_ids)) {
-    return '<p>No hay productos relacionados disponibles.</p>';
-}
 
 $args = array(
     'post_type'      => 'product',
     'post_status'    => 'publish',
     'posts_per_page' => $atts['limit'],
     'orderby'        => 'rand', 
-    'post__in'       => $related_ids, 
     'meta_query'     => array(
         array(
             'key'     => '_stock_status',
-            'value'   => 'instock',  // Solo productos con stock
+            'value'   => 'instock',  
             'compare' => '=',
         ),
     ),
@@ -237,47 +227,46 @@ $args = array(
 
 $query = new WP_Query($args);
 
-if ($query->have_posts()) {
+if ($query->have_posts()):
     $output = '<div class="wiwu-woo-carousel-products">';
-    $output .= '<div class="products">';
+        $output .= '<div class="products">';
 
-    while ($query->have_posts()) :
-        $query->the_post();
-        global $product;
+            while ($query->have_posts()) :
+                $query->the_post();
+                global $product;
 
-        $productoEnElCarrito = WC()->cart->find_product_in_cart(WC()->cart->generate_cart_id($product->get_id()));
-        $styleIconoCarrito = (!empty($productoEnElCarrito)) ? 'shopping-bag-activo.svg' : 'shopping-bag.svg';
+                $productoEnElCarrito = WC()->cart->find_product_in_cart(WC()->cart->generate_cart_id($product->get_id()));
+                $styleIconoCarrito = (!empty($productoEnElCarrito)) ? 'shopping-bag-activo.svg' : 'shopping-bag.svg';
 
-        $output .= '<div class="product">';
-        $output .= '<a href="' . esc_url(get_the_permalink()) . '">
-                        <div class="wiwu-carprod-cont-img">
-                            <img src="' . esc_url(get_stylesheet_directory_uri() . '/images/' . $styleIconoCarrito) . '" alt="" class="wiwu-shoppingbag"/>
-                            ' . wp_kses_post(wiwu_custom_hover_product_images()) . '
-                        </div>
-                    </a>';
-        $output .= '<div class="add-to-cart">' . wiwu_mi_boton_personalizado($product->get_id()) . '</div>';
-        $output .= '<h2 class="woocommerce-loop-product__title">' . get_the_title() . '</h2>';
-        $output .= '<span class="price">' . $product->get_price_html() . '</span>';
-        $output .= '</div>'; // Cierra el div del producto
+                $output .= '<div class="product">';
+                $output .= '<a href="' . esc_url(get_the_permalink()) . '">
+                                <div class="wiwu-carprod-cont-img">
+                                    <img src="' . esc_url(get_stylesheet_directory_uri() . '/images/' . $styleIconoCarrito) . '" alt="" class="wiwu-shoppingbag"/>
+                                    ' . wp_kses_post(wiwu_custom_hover_product_images()) . '
+                                </div>
+                            </a>';
+                $output .= '<div class="add-to-cart">' . wiwu_mi_boton_personalizado($product->get_id()) . '</div>';
+                $output .= '<h2 class="woocommerce-loop-product__title">' . get_the_title() . '</h2>';
+                $output .= '<span class="price">' . $product->get_price_html() . '</span>';
+                $output .= '</div>'; // Cierra el div del producto
 
-    endwhile;
+            endwhile;
 
-    $output .= '</div>'; // Cierra el div de productos
+        $output .= '</div>'; // Cierra el div de productos
     $output .= '</div>'; // Cierra el div del carrusel
 
     wp_reset_postdata();
 
     return $output;
-    } else {
-    return '<p>No hay productos relacionados disponibles.</p>';
-}
+    else :
+        return '<p>No hay productos relacionados disponiblesss.</p>';
+    endif;
  
 
 }
 /* ===============================================================
 *  FUNCION CAMBIA EL TEXTO DEL BOTON DEL CARRITO DE LOS PRODUCTOS
 *  ===============================================================*/
-add_shortcode( 'wiwu-carrusel-productos-relacionados', 'wiwu_mostrarCaruselProductosRelacionados' );
 function wiwu_mi_boton_personalizado($product_id) {
     $texto = '';
     $product = wc_get_product($product_id);
@@ -541,4 +530,178 @@ function wiwu_convertir_select_a_radio_del_atributo_color($html, $args) {
     endif;
     
     return $html;
+}
+
+add_shortcode( 'wiwu-productos-categoria', 'wiwu_mostrar_productos_categoria' );
+
+function wiwu_mostrar_productos_categoria($atts) {
+    // Atributos del shortcode con valores por defecto
+    $atts = shortcode_atts(
+        array(
+            'categoria' => '',
+            'limit' => 8
+        ), 
+        $atts, 
+        'wiwu-productos-categoria'
+    );
+    
+    // Si no se especifica categoría, mostrar mensaje
+    if(empty($atts['categoria'])) {
+        return '<p>Por favor, especifica una categoría de productos.</p>';
+    }
+        
+    // ID único para este carrusel
+    $carousel_id = 'wiwu-carousel-' . uniqid();
+    
+    // Argumentos para la consulta inicial
+    $args = array(
+        'post_type'      => 'product',
+        'post_status'    => 'publish',
+        'posts_per_page' => $atts['limit'],
+        'orderby'        => 'rand',
+        'meta_query'     => array(
+            array(
+                'key'     => '_stock_status',
+                'value'   => 'instock',
+                'compare' => '=',
+            ),
+        ),
+        'tax_query'      => array(
+            'relation' => 'AND',
+            array(
+                'taxonomy' => 'product_visibility',
+                'field'    => 'name',
+                'terms'    => 'exclude-from-catalog',
+                'operator' => 'NOT IN',
+            ),
+            array(
+                'taxonomy' => 'product_cat',
+                'field'    => 'slug',
+                'terms'    => $atts['categoria'],
+            ),
+        ),
+    );
+    
+    $query = new WP_Query($args);
+    
+    
+    $output = '';
+    
+    if ($query->have_posts()):
+        $output .= '<div class="wiwu-woo-products" id="' . esc_attr($carousel_id) . '">';
+        $output .= '<div class="products">';
+        
+        while ($query->have_posts()) :
+       
+            $query->the_post();
+            global $product;
+            
+            $productoEnElCarrito = WC()->cart->find_product_in_cart(WC()->cart->generate_cart_id($product->get_id()));
+            $styleIconoCarrito = (!empty($productoEnElCarrito)) ? 'shopping-bag-activo.svg' : 'shopping-bag.svg';
+            
+            $output .= '<div class="product">';
+            $output .= '<a href="' . esc_url(get_the_permalink()) . '">
+                            <div class="wiwu-carprod-cont-img">
+                                <img src="' . esc_url(get_stylesheet_directory_uri() . '/images/' . $styleIconoCarrito) . '" alt="" class="wiwu-shoppingbag"/>
+                                ' . wp_kses_post(wiwu_custom_hover_product_images()) . '
+                            </div>
+                        </a>';
+            $output .= '<div class="add-to-cart">' . wiwu_mi_boton_personalizado($product->get_id()) . '</div>';
+            $output .= '<h2 class="woocommerce-loop-product__title">' . get_the_title() . '</h2>';
+            $output .= '<span class="price">' . $product->get_price_html() . '</span>';
+            $output .= '</div>'; // Cierra el div del producto
+        endwhile;
+        
+        $output .= '</div>'; // Cierra el div de productos
+        
+        // Botón "Ver más"
+        $output .= '<div class="wiwu-load-more-container" style="text-align: center; margin-top: 20px;">';
+        $output .= '<button class="wiwu-load-more" data-category="' . esc_attr($atts['categoria']) . '" 
+                     data-limit="' . esc_attr($atts['limit']) . '" data-offset="' . esc_attr($atts['limit']) . '" 
+                     data-carousel="' . esc_attr($carousel_id) . '">Ver más</button>';
+        $output .= '</div>';
+        
+        $output .= '</div>'; // Cierra el div del carrusel
+        
+        // Script para cargar más productos
+        //      /*$("#' . esc_js($carousel_id) . ' .wiwu-load-more").on("click", function() {*/
+       
+        
+        wp_reset_postdata();
+    else:
+        $output .= '<p>No hay productos disponibles en esta categoría.</p>';
+    endif;
+    
+    return $output;
+}
+
+// Función AJAX para cargar más productos
+add_action('wp_ajax_wiwu_load_more_products_categoria', 'wiwu_load_more_products_categoria');
+add_action('wp_ajax_nopriv_wiwu_load_more_products_categoria', 'wiwu_load_more_products_categoria');
+function wiwu_load_more_products_categoria() {
+    //echo 'Entre desde php con ajax';
+    $category = sanitize_text_field($_POST['category']);
+    $limit = intval($_POST['limit']);
+    $offset = intval($_POST['offset']);
+    
+    $args = array(
+        'post_type'      => 'product',
+        'post_status'    => 'publish',
+        'posts_per_page' => $limit,
+        'offset'         => $offset,
+        'orderby'        => 'rand',
+        'meta_query'     => array(
+            array(
+                'key'     => '_stock_status',
+                'value'   => 'instock',
+                'compare' => '=',
+            ),
+        ),
+        'tax_query'      => array(
+            'relation' => 'AND',
+            array(
+                'taxonomy' => 'product_visibility',
+                'field'    => 'name',
+                'terms'    => 'exclude-from-catalog',
+                'operator' => 'NOT IN',
+            ),
+            array(
+                'taxonomy' => 'product_cat',
+                'field'    => 'slug',
+                'terms'    => $category,
+            ),
+        ),
+    );
+    
+    $query = new WP_Query($args);
+    
+    $output = '';
+    
+    if ($query->have_posts()) {
+        while ($query->have_posts()) {
+            $query->the_post();
+            global $product;
+           
+            $productoEnElCarrito = WC()->cart->find_product_in_cart(WC()->cart->generate_cart_id($product->get_id()));
+            $styleIconoCarrito = (!empty($productoEnElCarrito)) ? 'shopping-bag-activo.svg' : 'shopping-bag.svg';
+       
+            $output .= '<div class="product">';
+            $output .= '<a href="' . esc_url(get_the_permalink()) . '">
+                            <div class="wiwu-carprod-cont-img">
+                                <img src="' . esc_url(get_stylesheet_directory_uri() . '/images/' . $styleIconoCarrito) . '" alt="" class="wiwu-shoppingbag"/>
+                                ' . wp_kses_post(wiwu_custom_hover_product_images()) . '
+                            </div>
+                        </a>';
+            $output .= '<div class="add-to-cart">' . wiwu_mi_boton_personalizado($product->get_id()) . '</div>';
+            $output .= '<h2 class="woocommerce-loop-product__title">' . get_the_title() . '</h2>';
+            $output .= '<span class="price">' . $product->get_price_html() . '</span>';
+            $output .= '</div>';
+        }
+        
+        wp_send_json_success($output);
+    } else {
+        wp_send_json_error();
+    }
+    
+    wp_reset_postdata();
 }

@@ -4106,3 +4106,62 @@ padding-bottom: 0;
      }
 
 }
+
+.wiwu-woo-products .products{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.wiwu-woo-products .product{
+    max-width: 260px;
+    flex: 1 1 260px;
+}
+
+@media (max-width: 769px){
+    .wiwu-woo-products .product{
+        max-width: 250px; 
+        flex: 1 1 47% !important; 
+        width: 47%;
+    }
+}
+
+.wiwu-woo-products .product .add_to_cart_button{
+    text-decoration: none !important;
+}
+
+.wiwu-woo-products .woocommerce-loop-product__title{
+    font-size: 16px;
+    margin: 10px 0;
+    color: #727272;
+}
+
+.wiwu-load-more{
+    font-size: 18px;
+    font-family: "Roboto";
+    font-weight: 400;
+    color: #ffffff;
+    background-color: #ab8c68;
+    padding-top: 10px;
+    padding-right: 70px;
+    padding-bottom: 10px;
+    padding-left: 70px;
+    margin-top: px;
+    margin-right: px;
+    margin-bottom: px;
+    margin-left: px;
+    border-top: 0px solid #ab8c68;
+    border-bottom: 0px solid #ab8c68;
+    border-left: 0px solid #ab8c68;
+    border-right: 0px solid #ab8c68;
+    border-radius: 6px;
+}
+
+.wiwu-load-more:hover{
+    background-color: #000000;
+}

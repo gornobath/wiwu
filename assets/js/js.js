@@ -256,4 +256,53 @@ if($('.wiwu-woo-carousel-products .products').length > 0){
     })
 
 
+    $(".wiwu-load-more").on("click", function() {
+
+            var button = $(this);
+            var category = button.data("category");
+            var limit = button.data("limit");
+            var offset = button.data("offset");
+            var carousel = button.data("carousel");
+            
+            button.text("Cargando...").prop("disabled", true);
+            
+            $.ajax({
+                url:  admin_url.ajax_url,
+                type: "post",
+                data: {
+                    action: "wiwu_load_more_products_categoria",
+                    category: category,
+                    limit: limit,
+                    offset: offset
+                },
+                success: function(response) {
+               
+                    if(response.success && response.data) {
+                        //$(".products").slick("slickAdd", response.data);
+                        if(offset === 0) {
+                            $(".products").html(response.data);
+                        } else {
+                            $(".products").append(response.data);
+                        }
+                        button.data("offset", offset + limit);
+                        
+                        if(response.data.length < limit) {
+                            button.hide();
+                        }
+                     } else {
+                        button.text("No hay más productos");
+                    } 
+                    button.text("Ver más").prop("disabled", false);
+                },
+                error: function() {
+                    button.text("Error al cargar").prop("disabled", false);
+                }
+            });
+        });
+
+
 });
+
+
+
+

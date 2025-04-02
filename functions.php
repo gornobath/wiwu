@@ -4,6 +4,10 @@ function astra_child_enqueue_styles() {
     wp_enqueue_style('astra-style', get_template_directory_uri() . '/style.css');
     wp_enqueue_style('astra-child-style', get_stylesheet_uri(), array('astra-style'), wp_get_theme()->get('Version'));
     wp_enqueue_script('astra-child-script', get_stylesheet_directory_uri() . '/assets/js/js.js', array('jquery'), wp_get_theme()->get('Version'), true);
+    wp_localize_script('astra-child-script', 'admin_url', array(
+        'ajax_url'   =>  admin_url('admin-ajax.php'),
+        'nonce'  => wp_create_nonce( 'my-ajax-nonce' )
+    ));
 }
 
 add_action('wp_enqueue_scripts', 'astra_child_enqueue_styles');
