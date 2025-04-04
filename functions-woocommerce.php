@@ -533,7 +533,6 @@ function wiwu_convertir_select_a_radio_del_atributo_color($html, $args) {
 }
 
 add_shortcode( 'wiwu-productos-categoria', 'wiwu_mostrar_productos_categoria' );
-
 function wiwu_mostrar_productos_categoria($atts) {
     // Atributos del shortcode con valores por defecto
     $atts = shortcode_atts(
@@ -553,86 +552,19 @@ function wiwu_mostrar_productos_categoria($atts) {
     // ID único para este carrusel
     $carousel_id = 'wiwu-carousel-' . uniqid();
     
-    // Argumentos para la consulta inicial
-    $args = array(
-        'post_type'      => 'product',
-        'post_status'    => 'publish',
-        'posts_per_page' => $atts['limit'],
-        'orderby'        => 'rand',
-        'meta_query'     => array(
-            array(
-                'key'     => '_stock_status',
-                'value'   => 'instock',
-                'compare' => '=',
-            ),
-        ),
-        'tax_query'      => array(
-            'relation' => 'AND',
-            array(
-                'taxonomy' => 'product_visibility',
-                'field'    => 'name',
-                'terms'    => 'exclude-from-catalog',
-                'operator' => 'NOT IN',
-            ),
-            array(
-                'taxonomy' => 'product_cat',
-                'field'    => 'slug',
-                'terms'    => $atts['categoria'],
-            ),
-        ),
-    );
+    $args = wiwu_obtener_productos_por_categoria($atts['limit'],$atts['categoria']);
     
     $query = new WP_Query($args);
     
-    
-    $output = '';
-    
-    if ($query->have_posts()):
-        $output .= '<div class="wiwu-woo-products" id="' . esc_attr($carousel_id) . '">';
-        $output .= '<div class="products">';
-        
-        while ($query->have_posts()) :
-       
-            $query->the_post();
-            global $product;
-            
-            $productoEnElCarrito = WC()->cart->find_product_in_cart(WC()->cart->generate_cart_id($product->get_id()));
-            $styleIconoCarrito = (!empty($productoEnElCarrito)) ? 'shopping-bag-activo.svg' : 'shopping-bag.svg';
-            
-            $output .= '<div class="product">';
-            $output .= '<a href="' . esc_url(get_the_permalink()) . '">
-                            <div class="wiwu-carprod-cont-img">
-                                <img src="' . esc_url(get_stylesheet_directory_uri() . '/images/' . $styleIconoCarrito) . '" alt="" class="wiwu-shoppingbag"/>
-                                ' . wp_kses_post(wiwu_custom_hover_product_images()) . '
-                            </div>
-                        </a>';
-            $output .= '<div class="add-to-cart">' . wiwu_mi_boton_personalizado($product->get_id()) . '</div>';
-            $output .= '<h2 class="woocommerce-loop-product__title">' . get_the_title() . '</h2>';
-            $output .= '<span class="price">' . $product->get_price_html() . '</span>';
-            $output .= '</div>'; // Cierra el div del producto
-        endwhile;
-        
-        $output .= '</div>'; // Cierra el div de productos
-        
-        // Botón "Ver más"
-        $output .= '<div class="wiwu-load-more-container" style="text-align: center; margin-top: 20px;">';
-        $output .= '<button class="wiwu-load-more" data-category="' . esc_attr($atts['categoria']) . '" 
-                     data-limit="' . esc_attr($atts['limit']) . '" data-offset="' . esc_attr($atts['limit']) . '" 
-                     data-carousel="' . esc_attr($carousel_id) . '">Ver más</button>';
-        $output .= '</div>';
-        
-        $output .= '</div>'; // Cierra el div del carrusel
-        
-        // Script para cargar más productos
-        //      /*$("#' . esc_js($carousel_id) . ' .wiwu-load-more").on("click", function() {*/
-       
-        
-        wp_reset_postdata();
-    else:
-        $output .= '<p>No hay productos disponibles en esta categoría.</p>';
+    if (function_exists('wiwu_mostrar_productos')) :
+        return wiwu_mostrar_productos(
+            $query,
+            $carousel_id,
+            $atts['limit'], 
+            $atts['categoria'] 
+        );
     endif;
     
-    return $output;
 }
 
 // Función AJAX para cargar más productos
@@ -704,4 +636,109 @@ function wiwu_load_more_products_categoria() {
     }
     
     wp_reset_postdata();
+}
+
+
+/* ======================================================================
+*  FUNCION QUE RETORNA LOS PRODUCTOS DE UNA CATEGORIA ESPECIFICA
+*  @param int $limite  Número maximo de productos a obtener. DEbe de ser
+*  positivo y por defecto 0
+*  @param string $categoria Slug de la categoria. Obligatorio
+*  @return array|string Array de argumentos para WP_Query
+*  ======================================================================*/
+
+
+function wiwu_obtener_productos_por_categoria($limite = 8, $categoria){
+    
+    if(empty($categoria)) return '';
+
+    $limite = absint($limite);
+
+    if($limite <= 0)  $limite = 8;
+
+    $categoria_sanitizada = '';
+    $categoria_sanitizada = sanitize_title($categoria);
+
+    if(empty($categoria_sanitizada)) return '';
+
+    $args = '';
+    $args = array(
+        'post_type'      => 'product',
+        'post_status'    => 'publish',
+        'posts_per_page' => $limite,
+        'orderby'        => 'rand',
+        'meta_query'     => array(
+            array(
+                'key'     => '_stock_status',
+                'value'   => 'instock',
+                'compare' => '=',
+            ),
+        ),
+        'tax_query'      => array(
+            'relation' => 'AND',
+            array(
+                'taxonomy' => 'product_visibility',
+                'field'    => 'name',
+                'terms'    => 'exclude-from-catalog',
+                'operator' => 'NOT IN',
+            ),
+            array(
+                'taxonomy' => 'product_cat',
+                'field'    => 'slug',
+                'terms'    => $categoria,
+            ),
+        ),
+    );
+    return $args;
+}
+
+
+function  wiwu_mostrar_productos($query, $carousel_id,$limite,$categoria){
+    $output = '';
+
+    if ($query->have_posts()):
+        $output .= '<div class="wiwu-woo-products" id="' . esc_attr($carousel_id) . '">';
+        $output .= '<div class="products">';
+        
+        while ($query->have_posts()) :
+       
+            $query->the_post();
+            global $product;
+            
+            $productoEnElCarrito = WC()->cart->find_product_in_cart(WC()->cart->generate_cart_id($product->get_id()));
+            $styleIconoCarrito = (!empty($productoEnElCarrito)) ? 'shopping-bag-activo.svg' : 'shopping-bag.svg';
+            
+            $output .= '<div class="product">';
+            $output .= '<a href="' . esc_url(get_the_permalink()) . '">
+                            <div class="wiwu-carprod-cont-img">
+                                <img src="' . esc_url(get_stylesheet_directory_uri() . '/images/' . $styleIconoCarrito) . '" alt="" class="wiwu-shoppingbag"/>
+                                ' . wp_kses_post(wiwu_custom_hover_product_images()) . '
+                            </div>
+                        </a>';
+            $output .= '<div class="add-to-cart">' . wiwu_mi_boton_personalizado($product->get_id()) . '</div>';
+            $output .= '<h2 class="woocommerce-loop-product__title">' . get_the_title() . '</h2>';
+            $output .= '<span class="price">' . $product->get_price_html() . '</span>';
+            $output .= '</div>'; // Cierra el div del producto
+        endwhile;
+        
+        $output .= '</div>'; // Cierra el div de productos
+        
+        // Botón "Ver más"
+        $output .= '<div class="wiwu-load-more-container" style="text-align: center; margin-top: 20px;">';
+        $output .= '<button class="wiwu-load-more" data-category="' . esc_attr($categoria) . '" 
+                     data-limit="' . esc_attr($limite) . '" data-offset="' . esc_attr($limite) . '" 
+                     data-carousel="' . esc_attr($carousel_id) . '">Ver más</button>';
+        $output .= '</div>';
+        
+        $output .= '</div>'; // Cierra el div del carrusel
+        
+    
+        
+        wp_reset_postdata();
+    else:
+        $output .= '<p>No hay productos disponibles en esta categoría.</p>';
+    endif;
+
+    return $output;
+
 }
