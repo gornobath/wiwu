@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="27.214" height="24.357" viewBox="0 0 27.214 24.357">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #e2e1e1;
+      }
+    </style>
+  </defs>
+  <path id="Icon_fa-solid-heart" data-name="Icon fa-solid-heart" class="cls-1" d="M2.53,16.69l9.405,9.083c.4.372,1.467,1.547,1.706,1.547a12.646,12.646,0,0,0,1.8-1.774l9.245-8.856a7.951,7.951,0,0,0,2.53-5.82v-.308A7.6,7.6,0,0,0,14.245,5.188l-.638.638-.638-.638A7.6,7.6,0,0,0,0,10.562v.308A7.951,7.951,0,0,0,2.53,16.69Z" transform="translate(0 -2.964)"/>
+</svg>
