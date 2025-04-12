@@ -4219,3 +4219,46 @@ padding-bottom: 0;
 .wholesale_price_field input[type="number"] {
     -moz-appearance: textfield;
 }
+
+#custom-registration-form.woocommerce-form-register {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+}
+#custom-registration-form.woocommerce-form-register  .woocommerce-form-row{
+    margin-bottom: 20px;
+}
+
+
+#custom-registration-form.woocommerce-form-register  .woocommerce-form-row label{
+    padding: 0 0 5px 10px;
+    font-family: "Roboto";
+    font-size: 19px;
+    line-height: 1;
+    color: #2e2e2e;
+    font-weight: 300;
+}
+
+#custom-registration-form.woocommerce-form-register  .woocommerce-form-row .woocommerce-Input{
+    background-color: #ffffff;
+    border-color: #2e2e2e;
+    border-width: 1px 1px 1px 1px;
+    border-radius: 100px 100px 100px 100px;
+}
+
+
+#custom-registration-form.woocommerce-form-register .form-row-boton{
+
+}
+
+#custom-registration-form.woocommerce-form-register .woocommerce-Button{
+    background-color: #a78d5e;
+    font-family: "Roboto", Sans-serif;
+    font-weight: 500;
+    border-style: solid;
+    border-width: 1px 1px 1px 1px;
+    border-color: #a78d5e;
+    border-radius: 8px 8px 8px 8px;
+    padding: 10px 27px;
+    margin: 0 auto;
+}

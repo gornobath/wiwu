@@ -22,6 +22,19 @@ if ( file_exists( get_stylesheet_directory() . '/functions-woocommerce.php' ) ) 
     require_once get_stylesheet_directory() . '/functions-woocommerce.php';
 
 endif;
+require_once get_stylesheet_directory() . '/forms/register.php';
+
+// Cargar el archivo formulario registro si existe
+if ( file_exists( get_stylesheet_directory() . 'forms/register.php' ) ) :
+    
+
+endif;
+
+// Cargar el archivo formulario registro si existe
+if ( file_exists( get_stylesheet_directory() . 'emails/register.php' ) ) :
+    require_once get_stylesheet_directory() . '/forms/register.php';
+
+endif;
 
 
 /* =====================================================
