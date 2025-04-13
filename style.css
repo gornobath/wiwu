@@ -5,7 +5,7 @@ Description: Child theme para Astra.
 Author: Wiwo Colombia
 Author URI: https://wiwucolombia.com/
 Template: astra
-Version: 1.0.6
+Version: 1.0.7
 */
 
 .entry-content p:last-of-type,
@@ -203,9 +203,16 @@ p:last-of-type{
     padding: 40px 30px !important;
 	position: absolute;
     top: 100% !important;
-    left: -63vw !important;
     width: 100vw !important;
     z-index: 999;
+}
+
+.wiwu-header-principal-desktop .elementor-nav-menu .sub-menu.elementor-nav-menu--dropdown:not(.elementor-nav-menu .sub-menu.elementor-nav-menu--dropdown .elementor-nav-menu--dropdown){
+    left: -63vw !important;
+}
+
+.wiwu-header-secundario-desktop .elementor-nav-menu .sub-menu.elementor-nav-menu--dropdown:not(.elementor-nav-menu .sub-menu.elementor-nav-menu--dropdown .elementor-nav-menu--dropdown){
+    left: -67vw !important;
 }
 .wiwu-header-principal-desktop .elementor-nav-menu .sub-menu.elementor-nav-menu--dropdown .elementor-nav-menu--dropdown{
 	display: none;
@@ -382,11 +389,12 @@ p:last-of-type{
 
 .wiwu_home_sub_linea_dorada a{
 	color: #A78D5E;
+    display: block;
+	margin: 0 auto;
+    line-height: 1.5;
+    text-align: center;
     text-decoration: none !important;
     width: fit-content;
-    display: block;
-    text-align: center;
-	margin: 0 auto;
 }
 
 .wiwu_home_sub_linea_dorada a::after{
@@ -396,7 +404,7 @@ p:last-of-type{
     top: 0;
     left: 0;
     width: 0%;
-    height: 1px;
+    height: 3px;
     display: block;
 	-webkit-transition: width 500ms ease-in-out;
 	-moz-transition: width 500ms ease-in-out;
@@ -1675,6 +1683,7 @@ body .elementor-button{
         object-fit: contain;
         object-position: center;
         aspect-ratio: 1 / 1;
+        transform: scale(1.3);
     }
 }
 
@@ -1687,13 +1696,14 @@ body .elementor-button{
 }
 
 .wiwu-product-banner-cont-info-titulo{
-    color: #8d8d8d;
+    color: #727272;
     font-family: "roboto";
     font-weight: 700;
     line-height: 1;
     letter-spacing: 0;
     text-align: left;
 }
+
 
 .wiwu-product-banner-titulo-muy-grande{
         font-size: clamp(70px, 10vw, 275px);
@@ -1719,6 +1729,7 @@ body .elementor-button{
 
 @media (max-width: 800px){
 	.wiwu-product-banner-cont-info-titulo{
+        color: #2E2E2E;
         text-align: center;
 	}
 }
@@ -1831,13 +1842,15 @@ body .elementor-button{
 
 .wiwu-product-banner-cont-info-add-to-cart .single_add_to_cart_button{
 	background-color: #A78D5E !important;
-    border-radius: 0 !important;
+    border-radius: 10px !important;
+    -webkit-border-radius: 10px !important;
     border: 1px solid #a78d5e;
 	cursor: pointer;
     font-family: "roboto" !important;
     font-size: 16px !important;
     line-height: 1 !important;
     padding: 10px 40px !important;
+
 }
 
 
@@ -1850,7 +1863,10 @@ body .elementor-button{
 }
 .wiwu-product-banner-cont-info-add-to-cart .single_add_to_cart_button:hover{
 	background-color: #ffffff !important;
+    border: 0;
 	color: #A78D5E !important;
+    box-shadow: 3px 3px 5px #00000029;
+    -webkit-box-shadow: 3px 3px 5px #00000029;
 }
 
 .wiwu-product-infoadi{
@@ -2012,8 +2028,6 @@ body .elementor-button{
 }
 
 .wiwu-product-infoadi-cont-info-descripcion p{
-	color: #2E2E2E;
-    font-family: "Poppins", Sans-serif;
     font-size: 18px;
     font-weight: 300;
     line-height: 1.4;
@@ -2026,6 +2040,18 @@ body .elementor-button{
     flex-direction: row;
     flex-wrap: nowrap;
     gap: 4px;
+}
+
+.wiwu-product-infoadi-cont-info-descripcion p,
+.wiwu-product-infoadi-cont-info-descripcion h1,
+.wiwu-product-infoadi-cont-info-descripcion h2,
+.wiwu-product-infoadi-cont-info-descripcion h3,
+.wiwu-product-infoadi-cont-info-descripcion h4,
+.wiwu-product-infoadi-cont-info-descripcion h5,
+.wiwu-product-infoadi-cont-info-descripcion h6,
+.wiwu-product-infoadi-cont-info-descripcion span{
+	color: #2E2E2E;
+    font-family: "Poppins", Sans-serif;
 }
 
 @media (max-width: 800px){
@@ -2629,18 +2655,18 @@ body .elementor-button{
 .wiwu-tienda-cont-principal{
     padding: 0 !important;
     width: 100% !important;
-    height: 900px !important;
+    height: 700px !important;
 }
 
 .wiwu-tienda-categoria-cont-fondo{
     padding: 0;
     position: relative !important;
     width: 100% !important;
-    height: 900px !important;
-    background-position: center right;
+  /*   height: 700px !important; */
+    background-position: bottom right;
     background-size: contain;
     background-repeat: no-repeat;
-    max-width: 1140px;
+    
 }
 
 
@@ -2788,13 +2814,45 @@ body .elementor-button{
 .wiwu-tienda-titulo-principal-ocultar{
     opacity: 0 !important;
     visibility: hidden !important;
-    width: 0 !important;
-    max-width: 0 !important;
-    padding: 0!important;
+    padding: 0 !important;
+    transform: translateX(-300%);
+}
+
+.wiwu-tienda-ipad-titulo-principal-ocultar{
+    opacity: 0 !important;
+    visibility: hidden !important;
+    padding: 0 !important;
+    transform: translateX(300%);
+}
+
+
+
+.wiwu-tienda-titulo-principal-ocultar .wiwu-tienda-categoria-cont-2-botonera,
+.wiwu-tienda-titulo-principal-ocultar .wiwu-tienda-categoria-cont-3-botonera{
+    display: none !important;
+}
+
+.wiwu-tienda-banner,
+.wiwu-tienda-morrales,
+.wiwu-tienda-categoria-cont-fondo,
+.wiwu-tienda-categoria-cont-fondo-5
+{
+    height: 700px !important;
+    max-height: 700px;
+}
+
+@media (max-width:1030px){
+    .wiwu-tienda-banner,
+    .wiwu-tienda-morrales,
+    .wiwu-tienda-categoria-cont-fondo
+    {
+        height: 600px !important;
+        max-height: 600px;
+    }
 }
 
 .wiwu-tienda-banner{
-    height: 900px !important;
+/*     height: 700px !important; */
     overflow: hidden;
 }
 
@@ -2808,6 +2866,8 @@ body .elementor-button{
 .wiwu-tienda-morrales,
 .wiwu-tienda-titulo-principal,
 .wiwu-tienda-titulo-principal-ocultar,
+.wiwu-tienda-audio-watch-titulo-principal,
+.wiwu-tienda-audio-watch-titulo-principal-ocultar,
 .wiwu-tienda-morrales-mostrar, 
 .wiwu-tienda-morrales,
 .wiwu-tienda-ipad,
@@ -2816,27 +2876,27 @@ body .elementor-button{
 .wiwu-tienda-smartphone-mostrar,
 .wiwu-tienda-portatil,
 .wiwu-tienda-portatil-mostrar{
-    -webkit-transition: all 700ms linear !important;
-    -moz-transition: all 700ms linear !important;
-    -ms-transition: all 700ms linear !important;
-    -o-transition: all 700ms linear !important;
-    transition: all 700ms linear !important;
+    -webkit-transition: all 300ms linear !important;
+    -moz-transition: all 300ms linear !important;
+    -ms-transition: all 300ms linear !important;
+    -o-transition: all 300ms linear !important;
+    transition: all 300ms linear !important;
 }
 
 .wiwu-tienda-cont-1-izquierda,
 .wiwu-tienda-cont-1-izquierda-mostrar{
-    -webkit-transition: all 700ms linear !important;
-    -moz-transition: all 700ms linear !important;
-    -ms-transition: all 700ms linear !important;
-    -o-transition: all 700ms linear !important;
-    transition: all 700ms linear !important;
+    -webkit-transition: all 300ms linear !important;
+    -moz-transition: all 300ms linear !important;
+    -ms-transition: all 300ms linear !important;
+    -o-transition: all 300ms linear !important;
+    transition: all 300ms linear !important;
 }
 
 .wiwu-tienda-morrales{
     position: relative !important;
     right: 0  !important;
-    height: 900px; 
-    max-height: 900px;
+ /*    height: 700px; 
+    max-height: 700px; */
 }
 
 .wiwu-tienda-morrales-mostrar{
@@ -2846,8 +2906,30 @@ body .elementor-button{
     z-index: 2;
 }
 
+.wiwu-tienda-morrales .wiwu-tienda-cont-1-izquierda{
+    padding-left: 19% !important;
+}
+
+@media (max-width: 1100px){
+    .wiwu-tienda-morrales .wiwu-tienda-cont-1-izquierda{
+        padding-left: 13% !important;
+    }
+}
+
+@media (max-width: 1030px){
+    .wiwu-tienda-morrales .wiwu-tienda-cont-1-izquierda{
+        padding-left: 5% !important;
+    }
+}
+
+.wiwu-tienda-smartphones-activo{
+    width: 100% !important;
+    max-width:100% !important;;
+}
 
 
+.wiwu-tienda-smartphones-activo,
+.wiwu-tienda-smartphones .e-con-inner,
 .wiwu-tienda-smartphones-mostrar .e-con-inner,
 .wiwu-tienda-categoria-cont-4-botonera,
 .wiwu-tienda-categoria-cont-4-botonera-activo,
@@ -2863,11 +2945,11 @@ body .elementor-button{
 .wiwu-tienda-morrales-mobile-activo,
 .wiwu-tienda-mobile-menu,
 .wiwu-tienda-mobile-menu-activo{
-    -webkit-transition: all 500ms linear !important;
-    -moz-transition: all 500ms linear !important;
-    -ms-transition: all 500ms linear !important;
-    -o-transition: all 500ms linear !important;
-    transition: all 500ms linear !important;
+    -webkit-transition: all 300ms linear !important;
+    -moz-transition: all 300ms linear !important;
+    -ms-transition: all 300ms linear !important;
+    -o-transition: all 300ms linear !important;
+    transition: all 300ms linear !important;
 }
 
 .wiwu-tienda-ipad-mobile,
@@ -2894,14 +2976,26 @@ body .elementor-button{
     height: 500px !important;
 }
 
-.wiwu-tienda-audio-mobile{
-	background-position: bottom left;
-}
+
 .wiwu-tienda-portatiles-mobile{
     background-position: 0 60%; 
 }
+
+.wiwu-tienda-portatiles-mobile .wiwu-tienda-categoria-cont-botonera-boton{
+    position: absolute;
+    bottom: 4px;
+    left: 41%;
+}
+
+
 .wiwu-tienda-ipad-mobile{
     background-position: 21vw 66%;
+}
+
+.wiwu-tienda-ipad-mobile .wiwu-tienda-categoria-cont-botonera-boton{
+    position: absolute;
+    right: 19%;
+    bottom: 9%;
 }
 
 .wiwu-tienda-smartphones-mobile{
@@ -2913,10 +3007,43 @@ body .elementor-button{
     background-color: #f8f8f8 !important;
     background-position: 0 bottom;
     background-size: contain;
+    background-position: bottom left;
+}
+
+.wiwu-tienda-audio-mobile .wiwu-tienda-mobile-botonera{
+    justify-content: flex-end !important;
+}
+
+.wiwu-tienda-audio-mobile  .wiwu-tienda-categoria-cont-botonera-boton .elementor-widget-container {
+    position: absolute !important;
+    top: 38%;
+    top: 10%;
+}
+
+.wiwu-tienda-audio-mobile-activo.wiwu-tienda-audio-mobile .wiwu-tienda-mobile-cont-menu{
+    transform: translate(-9px, -13vh);
+    width: 90%;
+}
+
+.wiwu-tienda-audio-mobile .wiwu-tienda-mobile-menu-activo{
+    padding-left: 40px;
+    padding-top: 40px;
 }
 
 .wiwu-tienda-morrales-mobile-activo{
-    background-position: -45vw 0;
+    background-position: -51vw 0;
+}
+
+.wiwu-tienda-morrales-mobile .wiwu-tienda-mobile-botonera{
+    align-items: center !important;
+}
+
+.wiwu-tienda-mobile-menu-items{
+    height: 0 !important;
+}
+
+.wiwu-tienda-mobile-menu-activo .wiwu-tienda-mobile-menu-items{
+    height: auto !important;
 }
 
 .wiwu-tienda-portatiles-mobile-activo{
@@ -2948,33 +3075,71 @@ body .elementor-button{
 
 
 .wiwu-tienda-morrales-mobile .wiwu-tienda-mobile-cont-menu{
-	top: 235px;
+    bottom: -14px;
     right: 15px;
-	width: 50% !important ;
+    width: 200px !important;
+}
+
+.wiwu-tienda-mobile-cont-menu-activo{
+    width: auto !important;
+}
+
+
+.wiwu-tienda-morrales-mobile-activo.wiwu-tienda-morrales-mobile .wiwu-tienda-mobile-cont-menu{
+    transform: translateY(-25vh);
 }
 
 .wiwu-tienda-portatiles-mobile .wiwu-tienda-mobile-cont-menu{
-	top: 215px;
+	bottom: 0;
     right: 15px;
     width: 70% !important;
+    max-width: 300px !important;
+    transform: translateY(0vh);
 }
+
+.wiwu-tienda-portatiles-mobile-activo.wiwu-tienda-portatiles-mobile .wiwu-tienda-mobile-cont-menu{
+    transform: translateY(-7vh);
+}
+
 
 .wiwu-tienda-ipad-mobile .wiwu-tienda-mobile-cont-menu{
 	top: 38%;
-    left: 15px;
+    left: 20px;
     width: 50% !important;
+    max-width: 222px;
 }
 
+
 .wiwu-tienda-smartphones-mobile .wiwu-tienda-mobile-cont-menu{
-	top: 5%;
+    top: 30%;
     right: 15px;
     width: 60% !important;
+    max-width: 300px !important;
 }
+
+.wiwu-tienda-smartphones-mobile-activo.wiwu-tienda-smartphones-mobile .wiwu-tienda-mobile-cont-menu {
+    transform: translateY(-20%);
+}
+
+.wiwu-tienda-smartphones-mobile .wiwu-tienda-categoria-cont-botonera-boton{
+    position: absolute;
+    right: 0;
+    bottom: -36%;
+}
+
 .wiwu-tienda-audio-mobile .wiwu-tienda-mobile-cont-menu{
-	top: 10%;
-    right: 15px;
-    width: 50%;
+	top: 33%;
+    right: 30px;
+    width: 100%;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    flex-wrap: nowrap;
+    align-items: flex-end;
 }
+
+.wiwu-tienda-smartphones-mobile .wiwu-tienda-mobile-menu{
+    padding-top: 24px !important;
+} 
 
 .wiwu-tienda-mobile-botonera{
     display: flex !important;
@@ -2987,14 +3152,14 @@ body .elementor-button{
 }
 
 .wiwu-tienda-ipad-mobile-activo  .wiwu-tienda-mobile-botonera{
-    left: 15px;
+    left: 0px;
 }
 
 .wiwu-tienda-mobile-menu-items a{
     font-family: 'Poppins', sans-serif !important;
     color: #A78D5E !important;
     font-weight: 300 !important;
-    font-size: 18px !important;
+    font-size: 17px !important;
     text-decoration: none !important;
     display: flex;
     flex-direction: row;
@@ -3003,6 +3168,7 @@ body .elementor-button{
     align-items: flex-start;
     justify-content: flex-start;
     gap: 10px;
+    line-height: 1.4 !important;
 }
 
 
@@ -3013,15 +3179,15 @@ body .elementor-button{
     width: 10px; /* Inicialmente en 0px */
     height: 2px;
     background-color: #A78D5E !important;
-    top: 17px;
+    top: 13px;
 }
 
 
 .wiwu-tienda-mobile-categoria-cont-botonera-titulo .elementor-heading-title {
     font-family: 'Poppins', sans-serif !important;
     color: #727272 !important;
-    font-weight: 800 !important;
-    font-size: 20px !important;
+    font-weight: 600 !important;
+    font-size: 27px !important;
 }
 
 
@@ -3082,7 +3248,7 @@ body .elementor-button{
     position: relative !important;
     width: 100% !important;
     height: 400px !important;
-    background-position: center right;
+    background-position: top right;
     background-size: contain;
     background-repeat: no-repeat;
     max-width: 1140px;
@@ -3092,7 +3258,7 @@ body .elementor-button{
 	padding: 0;
     position: relative !important;
     width: 100% !important;
-    height: 900px !important;
+/*     height: 700px !important; */
     background-position: top left;
     background-size: cover;
     background-repeat: no-repeat;
@@ -3163,6 +3329,10 @@ body .elementor-button{
     overflow: hidden !important;
 }
 
+.wiwu-tienda-smartphones-activo{
+    height: 500px !important;
+}
+
 .wiwu-tienda-categoria-cont-4-botonera{
     position: absolute !important;
     display: flex !important;
@@ -3195,8 +3365,8 @@ body .elementor-button{
 }
 
 .wiwu-tienda-categoria-cont-4-botonera-activo{
-    right: 32%;
-    top: 101px;
+    right: 35%;
+    top: 89px;
 }
 
 .wiwu-tienda-categoria-cont-4-botonera-activo .wiwu-tienda-categoria-cont-botonera-titulo{
@@ -3245,9 +3415,9 @@ body .elementor-button{
 
 .wiwu-tienda-audio{
     position: relative !important;
-   left: 0  !important;
-    height: 900px; 
-    max-height: 900px;
+    left: 0  !important;
+    height: 700px; 
+    max-height: 700px;
 }
 
 .wiwu-tienda-audio-mostrar{
@@ -3255,6 +3425,20 @@ body .elementor-button{
     max-width: 100% !important;
     position: absolute !important;
     z-index: 2;
+}
+
+.wiwu-tienda-audio-watch-titulo-principal-ocultar{
+    opacity: 0 !important;
+    visibility: hidden !important;
+    padding: 0 !important;
+    transform: translateX(100%);
+}
+
+
+
+.wiwu-tienda-titulo-principal-ocultar .wiwu-tienda-categoria-cont-2-botonera,
+.wiwu-tienda-titulo-principal-ocultar .wiwu-tienda-categoria-cont-3-botonera{
+    display: none !important;
 }
 
 
@@ -3306,20 +3490,25 @@ body .elementor-button{
 
 .wiwu-woo-carousel-products .slick-prev,
 .wiwu-woo-carousel-products .slick-next {
-    color: #ffffff;
+    color: rgba(0, 0, 0, 0.2);
     font-size: 15px !important;
-    background: rgba(0, 0, 0, 0.2);
+    background: transparent;
     border: none;
     border-radius: 50%;
     padding: 15px;
     position: absolute;
-    top: 50%;
+    top: 43%;
     transform: translateY(-50%);
     z-index: 1;
     display: flex !important;
     justify-content: center;
     align-items: center;
+  background: transparent;
+}
 
+.wiwu-woo-carousel-products .slick-prev:hover,
+.wiwu-woo-carousel-products .slick-next:hover {
+    background: transparent;
 }
 
 .wiwu-woo-carousel-products .slick-prev::before,
@@ -3524,10 +3713,10 @@ body .elementor-button{
 }
 
 .wiwu-home-product-desc .wiwu-home-ultra-producto-imagen{
-	  width: 50vw !important;
-    z-index: 2;
     top: 13vh;
     right: -18vw;
+    width: 50vw !important;
+    z-index: 3;
 }
 
 .wiwu-home-product-desc .wiwu-home-ultra-titulo-2{
@@ -4220,16 +4409,19 @@ padding-bottom: 0;
     -moz-appearance: textfield;
 }
 
+#wholesale-registration-form.woocommerce-form-register,
 #custom-registration-form.woocommerce-form-register {
     width: 100%;
-    max-width: 500px;
+    max-width: 85%;
     margin: 0 auto;
 }
+#wholesale-registration-form.woocommerce-form-register .woocommerce-form-row,
 #custom-registration-form.woocommerce-form-register  .woocommerce-form-row{
     margin-bottom: 20px;
 }
 
 
+#wholesale-registration-form.woocommerce-form-register  .woocommerce-form-row label,
 #custom-registration-form.woocommerce-form-register  .woocommerce-form-row label{
     padding: 0 0 5px 10px;
     font-family: "Roboto";
@@ -4239,6 +4431,7 @@ padding-bottom: 0;
     font-weight: 300;
 }
 
+#wholesale-registration-form.woocommerce-form-register  .woocommerce-form-row .woocommerce-Input,
 #custom-registration-form.woocommerce-form-register  .woocommerce-form-row .woocommerce-Input{
     background-color: #ffffff;
     border-color: #2e2e2e;
@@ -4246,11 +4439,17 @@ padding-bottom: 0;
     border-radius: 100px 100px 100px 100px;
 }
 
-
+.woocommerce-form-row.form-row.ast-animate-input,
 #custom-registration-form.woocommerce-form-register .form-row-boton{
-
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: flex-start;
 }
 
+#wholesale-registration-form.woocommerce-form-register .woocommerce-Button,
 #custom-registration-form.woocommerce-form-register .woocommerce-Button{
     background-color: #a78d5e;
     font-family: "Roboto", Sans-serif;
@@ -4261,4 +4460,9 @@ padding-bottom: 0;
     border-radius: 8px 8px 8px 8px;
     padding: 10px 27px;
     margin: 0 auto;
+}
+
+
+.logged-in .wiwu-header-principal-login{
+    display: none !important;
 }

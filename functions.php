@@ -8,6 +8,10 @@ function astra_child_enqueue_styles() {
         'ajax_url'   =>  admin_url('admin-ajax.php'),
         'nonce'  => wp_create_nonce( 'my-ajax-nonce' )
     ));
+    wp_localize_script('wiwu-custom-js', 'wiwu_data', array(
+        'is_logged_in' => is_user_logged_in(), // Booleano (true/false)
+        'logout_url'   => wp_logout_url(home_url()), // URL de logout
+    ));
 }
 
 add_action('wp_enqueue_scripts', 'astra_child_enqueue_styles');
@@ -22,17 +26,21 @@ if ( file_exists( get_stylesheet_directory() . '/functions-woocommerce.php' ) ) 
     require_once get_stylesheet_directory() . '/functions-woocommerce.php';
 
 endif;
-require_once get_stylesheet_directory() . '/forms/register.php';
+require_once get_stylesheet_directory() . '/forms/register-usuario.php';
+require_once get_stylesheet_directory() . '/mails/register.php';
+require_once get_stylesheet_directory() . '/forms/register-mayorista.php';
+require_once get_stylesheet_directory() . '/mails/register-mayorista.php';
+/* require_once get_stylesheet_directory() . '/mails/register.php'; */
 
 // Cargar el archivo formulario registro si existe
-if ( file_exists( get_stylesheet_directory() . 'forms/register.php' ) ) :
+if ( file_exists( get_stylesheet_directory() . 'forms/register-usuario.php' ) ) :
     
 
 endif;
 
 // Cargar el archivo formulario registro si existe
-if ( file_exists( get_stylesheet_directory() . 'emails/register.php' ) ) :
-    require_once get_stylesheet_directory() . '/forms/register.php';
+if ( file_exists( get_stylesheet_directory() . '/mails/register.php' ) ) :
+    require_once get_stylesheet_directory() . '/mails/register.php';
 
 endif;
 

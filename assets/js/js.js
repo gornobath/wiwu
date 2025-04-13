@@ -67,14 +67,14 @@ jQuery(function ($) {
     if(estadoBotonMorrales == false){
         $(this).addClass('wiwu-tienda-categoria-cont-botonera-boton-activo')
         $('.wiwu-tienda-banner').addClass('wiwu-tienda-banner-ocultar');
-        $('.wiwu-tienda-titulo-principal').addClass('wiwu-tienda-titulo-principal-ocultar');
+        //$('.wiwu-tienda-titulo-principal').addClass('wiwu-tienda-titulo-principal-ocultar');
         $('.wiwu-tienda-morrales').addClass('wiwu-tienda-morrales-mostrar');
         $('.wiwu-tienda-cont-1-izquierda').addClass('wiwu-tienda-cont-1-izquierda-mostrar');
         estadoBotonMorrales = true
     }else{
         $(this).removeClass('wiwu-tienda-categoria-cont-botonera-boton-activo')
         $('.wiwu-tienda-banner').removeClass('wiwu-tienda-banner-ocultar');
-        $('.wiwu-tienda-titulo-principal').removeClass('wiwu-tienda-titulo-principal-ocultar');
+       // $('.wiwu-tienda-titulo-principal').removeClass('wiwu-tienda-titulo-principal-ocultar');
         $('.wiwu-tienda-morrales').removeClass('wiwu-tienda-morrales-mostrar');
         $('.wiwu-tienda-cont-1-izquierda').removeClass('wiwu-tienda-cont-1-izquierda-mostrar');
         estadoBotonMorrales = false
@@ -87,13 +87,13 @@ jQuery(function ($) {
    $('#wiwu-tienda-categoria-cont-botonera-boton-2').on('click',function(){
     if(estadoBotonPortatiles == false){
         $(this).addClass('wiwu-tienda-categoria-cont-botonera-boton-activo')
-        $('.wiwu-tienda-ipad').addClass('wiwu-tienda-titulo-principal-ocultar');
+        $('.wiwu-tienda-ipad').addClass('wiwu-tienda-ipad-titulo-principal-ocultar');
         $('.wiwu-tienda-portatil').addClass('wiwu-tienda-portatil-mostrar');
         $('.wiwu-tienda-cont-2-derecha').addClass('wiwu-tienda-cont-2-derecha-mostrar');
         estadoBotonPortatiles = true
     }else{
         $(this).removeClass('wiwu-tienda-categoria-cont-botonera-boton-activo')
-        $('.wiwu-tienda-ipad').removeClass('wiwu-tienda-titulo-principal-ocultar');
+        $('.wiwu-tienda-ipad').removeClass('wiwu-tienda-ipad-titulo-principal-ocultar');
         $('.wiwu-tienda-portatil').removeClass('wiwu-tienda-portatil-mostrar');
         $('.wiwu-tienda-cont-2-derecha').removeClass('wiwu-tienda-cont-2-derecha-mostrar');
         estadoBotonPortatiles = false
@@ -121,12 +121,16 @@ let estadoBotonIpad = false;
    $('#wiwu-tienda-categoria-cont-botonera-boton-4').on('click',function(){
     if(estadoBotonSmarthphone == false){
         $(this).addClass('wiwu-tienda-categoria-cont-botonera-boton-activo')
+        $('.wiwu-tienda-smartphones').addClass('wiwu-tienda-smartphones-activo');
+        $('.wiwu-tienda-smartphones .e-con-inner').addClass('wiwu-tienda-smartphones-activo');
         $('.wiwu-tienda-categoria-cont-4-botonera').addClass('wiwu-tienda-categoria-cont-4-botonera-activo')
         $('.wiwu-tienda-smartphone').addClass('wiwu-tienda-smartphone-mostrar');
         $('.wiwu-tienda-cont-4-derecha').addClass('wiwu-tienda-cont-4-derecha-mostrar');
         estadoBotonSmarthphone = true
     }else{
         $(this).removeClass('wiwu-tienda-categoria-cont-botonera-boton-activo')
+        $('.wiwu-tienda-smartphones').removeClass('wiwu-tienda-smartphones-activo');
+        $('.wiwu-tienda-smartphones .e-con-inner').removeClass('wiwu-tienda-smartphones-activo');
         $('.wiwu-tienda-smartphone').removeClass('wiwu-tienda-smartphone-mostrar');
         $('.wiwu-tienda-cont-4-derecha').removeClass('wiwu-tienda-cont-4-derecha-mostrar');
         $('.wiwu-tienda-categoria-cont-4-botonera').removeClass('wiwu-tienda-categoria-cont-4-botonera-activo')
@@ -134,6 +138,23 @@ let estadoBotonIpad = false;
     }
    })
 
+   
+   let estadoAudioWatch= false;
+   $('#wiwu-tienda-categoria-cont-botonera-boton-5').on('click',function(){
+    if(estadoAudioWatch == false){
+        $(this).addClass('wiwu-tienda-categoria-cont-botonera-boton-activo')
+        $('.wiwu-tienda-audio').addClass('wiwu-tienda-audio-mostrar');
+        $('.wiwu-tienda-audio-watch-titulo-principal').addClass('wiwu-tienda-audio-watch-titulo-principal-ocultar');
+        $('.wiwu-tienda-cont-5-derecha').addClass('wiwu-tienda-cont-5-derecha-mostrar');
+        estadoAudioWatch = true
+    }else{
+        $(this).removeClass('wiwu-tienda-categoria-cont-botonera-boton-activo')
+        $('.wiwu-tienda-audio').removeClass('wiwu-tienda-audio-mostrar');
+        $('.wiwu-tienda-audio-watch-titulo-principal').removeClass('wiwu-tienda-audio-watch-titulo-principal-ocultar');
+        $('.wiwu-tienda-cont-5-derecha').removeClass('wiwu-tienda-cont-5-derecha-mostrar');
+        estadoAudioWatch = false
+    }
+   })
 
 
 
@@ -142,13 +163,17 @@ let estadoBotonIpad = false;
         if(estadoBotonMorralesMobile == false){
             $(this).find('.wiwu-tienda-categoria-cont-botonera-boton').addClass('wiwu-tienda-categoria-cont-botonera-boton-activo');
             $(this).addClass('wiwu-tienda-morrales-mobile-activo');
-            $('.wiwu-tienda-mobile-menu').addClass('wiwu-tienda-mobile-menu-activo');
+            $(this).find('.wiwu-tienda-mobile-menu').addClass('wiwu-tienda-mobile-menu-activo');
+            $(this).find('.wiwu-tienda-mobile-cont-menu').addClass('wiwu-tienda-mobile-cont-menu-activo');
+            $(this).find('.wiwu-tienda-mobile-menu-items').addClass('wiwu-tienda-mobile-menu-items-activo');
             
             estadoBotonMorralesMobile = true;
         }else{
             $(this).removeClass('wiwu-tienda-morrales-mobile-activo')
             $('.wiwu-tienda-mobile-menu').removeClass('wiwu-tienda-mobile-menu-activo');
             $(this).find('.wiwu-tienda-categoria-cont-botonera-boton').removeClass('wiwu-tienda-categoria-cont-botonera-boton-activo');
+            $(this).find('.wiwu-tienda-mobile-menu-items').removeClass('wiwu-tienda-mobile-menu-items-activo')
+            $(this).find('.wiwu-tienda-mobile-cont-menu').removeClass('wiwu-tienda-mobile-cont-menu-activo');
             estadoBotonMorralesMobile = false;
         }
    })
@@ -158,7 +183,7 @@ let estadoBotonIpad = false;
         if(estadoBotonPortatilesMobile == false){
             $(this).find('.wiwu-tienda-categoria-cont-botonera-boton').addClass('wiwu-tienda-categoria-cont-botonera-boton-activo');
             $(this).addClass('wiwu-tienda-portatiles-mobile-activo');
-            $('.wiwu-tienda-mobile-menu').addClass('wiwu-tienda-mobile-menu-activo');
+            $(this).find('.wiwu-tienda-mobile-menu').addClass('wiwu-tienda-mobile-menu-activo');
             estadoBotonPortatilesMobile = true;
         }else{
             $(this).removeClass('wiwu-tienda-portatiles-mobile-activo')
@@ -173,7 +198,7 @@ let estadoBotonIpad = false;
         if(estadoBotonIpadMobile == false){
             $(this).find('.wiwu-tienda-categoria-cont-botonera-boton').addClass('wiwu-tienda-categoria-cont-botonera-boton-activo');
             $(this).addClass('wiwu-tienda-ipad-mobile-activo');
-            $('.wiwu-tienda-mobile-menu').addClass('wiwu-tienda-mobile-menu-activo');
+            $(this).find('.wiwu-tienda-mobile-menu').addClass('wiwu-tienda-mobile-menu-activo');
             estadoBotonIpadMobile = true;
         }else{
             $(this).removeClass('wiwu-tienda-ipad-mobile-activo')
@@ -188,7 +213,7 @@ let estadoBotonIpad = false;
         if(estadoBotonSmartphonesMobile == false){
             $(this).find('.wiwu-tienda-categoria-cont-botonera-boton').addClass('wiwu-tienda-categoria-cont-botonera-boton-activo');
             $(this).addClass('wiwu-tienda-smartphones-mobile-activo');
-            $('.wiwu-tienda-mobile-menu').addClass('wiwu-tienda-mobile-menu-activo');
+           $(this).find('.wiwu-tienda-mobile-menu').addClass('wiwu-tienda-mobile-menu-activo');
             
             estadoBotonSmartphonesMobile = true;
         }else{
@@ -196,6 +221,22 @@ let estadoBotonIpad = false;
             $('.wiwu-tienda-mobile-menu').removeClass('wiwu-tienda-mobile-menu-activo');
             $(this).find('.wiwu-tienda-categoria-cont-botonera-boton').removeClass('wiwu-tienda-categoria-cont-botonera-boton-activo');
             estadoBotonSmartphonesMobile = false;
+        }
+   })
+
+   let estadoBotonAudioWatchMobile = false;
+   $('.wiwu-tienda-audio-mobile').on('click',function(){
+        if(estadoBotonAudioWatchMobile == false){
+            $(this).find('.wiwu-tienda-categoria-cont-botonera-boton').addClass('wiwu-tienda-categoria-cont-botonera-boton-activo');
+            $(this).addClass('wiwu-tienda-audio-mobile-activo');
+            $(this).find('.wiwu-tienda-mobile-menu').addClass('wiwu-tienda-mobile-menu-activo');
+            
+            estadoBotonAudioWatchMobile = true;
+        }else{
+            $(this).removeClass('wiwu-tienda-audio-mobile-activo')
+            $('.wiwu-tienda-mobile-menu').removeClass('wiwu-tienda-mobile-menu-activo');
+            $(this).find('.wiwu-tienda-categoria-cont-botonera-boton').removeClass('wiwu-tienda-categoria-cont-botonera-boton-activo');
+            estadoBotonAudioWatchMobile = false;
         }
    })
 
@@ -299,7 +340,21 @@ if($('.wiwu-woo-carousel-products .products').length > 0){
                 }
             });
         });
-
+    
+        /* =======================================================================================
+        *  Verifica si el menú existe y el usuario está logueado para agregar al final la opcion 
+        *  de cerrar sesion
+        *  ======================================================================================= */
+        if ($('#wiwu-header-home-derecha').length && $('body').hasClass('logged-in')) {
+            // Genera la URL de logout con redirección al home
+            var homeUrl = window.location.origin; // Obtiene la URL del sitio (ej: https://tudominio.com)
+            var logoutUrl = homeUrl + '/wp-login.php?action=logout&redirect_to=' + encodeURIComponent(homeUrl);
+            
+            // Agrega el enlace de logout al final del menú
+            $('#wiwu-header-home-derecha ul.elementor-nav-menu').append(
+                '<li class="menu-item"><a href="' + logoutUrl + '" class="elementor-item menu-link">Cerrar Sesión</a></li>'
+            );
+        }
 
 });
 

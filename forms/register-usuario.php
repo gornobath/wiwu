@@ -1,6 +1,5 @@
 <?php defined( 'ABSPATH' ) || exit;
 
-
 function custom_registration_form_shortcode() {
     // Solo mostrar el formulario si el usuario no está logueado
     if (!is_user_logged_in()) {
@@ -41,17 +40,17 @@ function custom_registration_form_shortcode() {
         <form id="custom-registration-form" class="woocommerce-form woocommerce-form-register wiwu-woocommerce-form register" method="post">
             <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
                 <label for="reg_first_name">Nombre</label>
-                <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="first_name" id="reg_first_name" value="<?php echo (!empty($_POST['first_name'])) ? esc_attr($_POST['first_name']) : ''; ?>" required />
+                <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="first_name" id="reg_first_name" value="" required />
             </p>
             
             <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
                 <label for="reg_last_name">Apellido</label>
-                <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="last_name" id="reg_last_name" value="<?php echo (!empty($_POST['last_name'])) ? esc_attr($_POST['last_name']) : ''; ?>" required />
+                <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="last_name" id="reg_last_name" value="" required />
             </p>
             
             <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
                 <label for="reg_email">Correo electrónico</label>
-                <input type="email" class="woocommerce-Input woocommerce-Input--text input-text" name="email" id="reg_email" value="<?php echo (!empty($_POST['email'])) ? esc_attr($_POST['email']) : ''; ?>" required />
+                <input type="email" class="woocommerce-Input woocommerce-Input--text input-text" name="email" id="reg_email" value="" required />
             </p>
             
             <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
@@ -156,7 +155,8 @@ function custom_register_user_ajax() {
     }
     
     // Crear usuario
-    $user_id = wp_create_user($_POST['email'], $_POST['password'], $_POST['email']);
+    $emailSanitizado =  isset($_POST['email']) ? sanitize_email( wp_unslash( $_POST['email'] ) ) :  '';
+    $user_id = wp_create_user($emailSanitizado, $_POST['password'], $emailSanitizado);
     
     if (is_wp_error($user_id)) {
         $errors[] = 'registration_failed';
