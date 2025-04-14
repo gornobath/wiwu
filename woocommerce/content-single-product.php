@@ -96,22 +96,24 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
                 </div>
             </div>
             <div class="wiwu-product-banner-cont-info">
-                <div class="wiwu-product-banner-box-1_info">
-                    <h1 class="wiwu-product-banner-cont-info-titulo <?php echo esc_attr($classTamanoLetraTitulo);?>"><?php esc_html(the_title()); ?></h1>
-                    <div class="wiwu-product-banner-cont-info-texto">
-                        <?php the_content(); ?>
+                <div class="wiwu-product-banner-box-general">
+                    <div class="wiwu-product-banner-box-1_info">
+                        <h1 class="wiwu-product-banner-cont-info-titulo <?php echo esc_attr($classTamanoLetraTitulo);?>"><?php esc_html(the_title()); ?></h1>
+                        <div class="wiwu-product-banner-cont-info-texto">
+                            <?php the_content(); ?>
+                        </div>
                     </div>
-                </div>
-                
-                <div class="wiwu-product-banner-box-2_info">
-                    <div class="wiwu-product-banner-cont-info-price">
-                        <span class="price"><?php woocommerce_template_single_price(); ?></span>
-                    </div>
+                    
+                    <div class="wiwu-product-banner-box-2_info">
+                        <div class="wiwu-product-banner-cont-info-price">
+                            <span class="price"><?php woocommerce_template_single_price(); ?></span>
+                        </div>
 
-                    <div class="wiwu-product-banner-cont-info-add-to-cart">
-                        <?php woocommerce_template_single_add_to_cart(); ?>
+                        <div class="wiwu-product-banner-cont-info-add-to-cart">
+                            <?php woocommerce_template_single_add_to_cart(); ?>
+                        </div>
                     </div>
-                </div>
+                </div>       
             </div>
         </div>
     </div>

@@ -206,7 +206,7 @@ function  wiwu_mostrarCaruselProductosRelacionados(){
 $args = array(
     'post_type'      => 'product',
     'post_status'    => 'publish',
-    'posts_per_page' => $atts['limit'],
+    'posts_per_page' => 8,
     'orderby'        => 'rand', 
     'meta_query'     => array(
         array(
@@ -259,7 +259,7 @@ if ($query->have_posts()):
 
     return $output;
     else :
-        return '<p>No hay productos relacionados disponiblesss.</p>';
+        return '<p>No hay productos relacionados disponibles.</p>';
     endif;
  
 
@@ -273,7 +273,7 @@ function wiwu_mi_boton_personalizado($product_id) {
 
     // Verificar si el producto ya está en el carrito
     $cart = WC()->cart;
-    $is_product_in_caart = false;
+    $is_product_in_cart = false;
 
     foreach ($cart->get_cart() as $cart_item) {
         if ($cart_item['product_id'] == $product_id) {
@@ -295,6 +295,7 @@ function wiwu_mi_boton_personalizado($product_id) {
         $texto = 'Seleccionar opciones';
         $add_to_cart_url = get_permalink($product_id); // Redirige a la página del producto
     }
+    
 
     // Crear el botón HTML
     $add_to_cart_button = '<a href="' . esc_url($add_to_cart_url) . '" class="button add_to_cart_button">'.$texto.'</a>';
@@ -360,6 +361,7 @@ function wiwu_mostrar_atributo_color_en_producto() {
     $colors = '';
     $description = '';
     $nombre = '';
+    $primerElemento = true;
     $slug = '';
     $term = '';
     $tipoProducto = '';
@@ -387,9 +389,10 @@ function wiwu_mostrar_atributo_color_en_producto() {
                     if ($description) :
                         //echo '<div class="wiwu-single-product-color" style="background: '.esc_attr($description).'"></div>';
                         echo '<label class="wiwu-single-product-color-label">';
-                        echo '<input type="radio" name="pa_colores" value="' . esc_attr($slug) . '" class="wiwu-single-product-color-radio" /> ';
+                        echo '<input type="radio" name="pa_colores" value="' . esc_attr($slug) . '" class="wiwu-single-product-color-radio" '.($primerElemento ? 'checked' : '').' /> ';
                             echo '<span class="wiwu-single-product-color" style="background-color: ' . esc_attr($term->description) . ';" data-color-name="'.esc_attr($nombre).'"></span>';
                         echo '</label>';
+                        $primerElemento = false;
                     endif;
                 endif;
             endforeach;
@@ -538,7 +541,7 @@ function wiwu_mostrar_productos_categoria($atts) {
     $atts = shortcode_atts(
         array(
             'categoria' => '',
-            'limit' => 8
+            'limit' => 4
         ), 
         $atts, 
         'wiwu-productos-categoria'
@@ -552,7 +555,7 @@ function wiwu_mostrar_productos_categoria($atts) {
     // ID único para este carrusel
     $carousel_id = 'wiwu-carousel-' . uniqid();
     
-    $args = wiwu_obtener_productos_por_categoria($atts['limit'],$atts['categoria']);
+    $args = wiwu_obtener_productos_por_categoria($atts['categoria'],$atts['limit']);
     
     $query = new WP_Query($args);
     
@@ -563,13 +566,13 @@ function wiwu_mostrar_productos_categoria($atts) {
             $atts['limit'], 
             $atts['categoria'] 
         );
-    endif;
+    endif; 
     
 }
 
 // Función AJAX para cargar más productos
-add_action('wp_ajax_wiwu_load_more_products_categoria', 'wiwu_load_more_products_categoria');
-add_action('wp_ajax_nopriv_wiwu_load_more_products_categoria', 'wiwu_load_more_products_categoria');
+// add_action('wp_ajax_wiwu_load_more_products_categoria', 'wiwu_load_more_products_categoria');
+// add_action('wp_ajax_nopriv_wiwu_load_more_products_categoria', 'wiwu_load_more_products_categoria');
 function wiwu_load_more_products_categoria() {
     //echo 'Entre desde php con ajax';
     $category = sanitize_text_field($_POST['category']);
@@ -648,7 +651,7 @@ function wiwu_load_more_products_categoria() {
 *  ======================================================================*/
 
 
-function wiwu_obtener_productos_por_categoria($limite = 8, $categoria){
+function wiwu_obtener_productos_por_categoria($categoria,$limite = 8){
     
     if(empty($categoria)) return '';
 
@@ -666,7 +669,7 @@ function wiwu_obtener_productos_por_categoria($limite = 8, $categoria){
         'post_type'      => 'product',
         'post_status'    => 'publish',
         'posts_per_page' => $limite,
-        'orderby'        => 'rand',
+        'orderby'        => 'desc',
         'meta_query'     => array(
             array(
                 'key'     => '_stock_status',
@@ -697,7 +700,7 @@ function wiwu_obtener_productos_por_categoria($limite = 8, $categoria){
 
 function  wiwu_mostrar_productos($query, $carousel_id,$limite,$categoria){
     $output = '';
-
+    $contadorIteracciones = 0;
 
     if ($query->have_posts()):
         $output .= '<div class="wiwu-woo-products" id="' . esc_attr($carousel_id) . '">';
@@ -724,19 +727,21 @@ function  wiwu_mostrar_productos($query, $carousel_id,$limite,$categoria){
             $output .= '<h2 class="woocommerce-loop-product__title">' . get_the_title() . '</h2>';
             $output .= '<span class="price">' . $product->get_price_html() . '</span>';
             $output .= '</div>'; // Cierra el div del producto
+            $contadorIteracciones++;
 
         endwhile;
         
         $output .= '</div>'; // Cierra el div de productos
         
         // Botón "Ver más"
-        //if( $contadorIteracciones > $limite):
+        $limite = 4;
+        if( $contadorIteracciones > $limite):
             $output .= '<div class="wiwu-load-more-container" style="text-align: center; margin-top: 20px;">';
             $output .= '<button class="wiwu-load-more" data-category="' . esc_attr($categoria) . '" 
                         data-limit="' . esc_attr($limite) . '" data-offset="' . esc_attr($limite) . '" 
                         data-carousel="' . esc_attr($carousel_id) . '">Ver más</button>';
             $output .= '</div>';
-        //endif;
+        endif;
         
         $output .= '</div>'; // Cierra el div del carrusel
         
@@ -754,7 +759,7 @@ function  wiwu_mostrar_productos($query, $carousel_id,$limite,$categoria){
 
 
 
-function wiwu_obtener_productos_por_id_categoria($limite = 8, $categoria_id){
+function wiwu_obtener_productos_por_id_categoria( $categoria_id,$limite = 8){
     
     if(empty($categoria_id)) return '';
 
@@ -814,7 +819,7 @@ function wiwu_mostrar_productos_subcategoria($atts) {
     
     $atts = shortcode_atts(
         array(
-            'limit' => 8
+            'limit' => 4
         ), 
         $atts, 
         'wiwu-productos-categoria'
@@ -823,7 +828,7 @@ function wiwu_mostrar_productos_subcategoria($atts) {
     // ID único para este carrusel
     $carousel_id = 'wiwu-carousel-' . uniqid();
     
-    $args = wiwu_obtener_productos_por_id_categoria($atts['limit'],$idCategoria);
+    $args = wiwu_obtener_productos_por_id_categoria($idCategoria,$atts['limit']);
     
     $query = new WP_Query($args);
    
@@ -928,3 +933,32 @@ function apply_wholesale_price_cart($cart) {
     }
 }
 add_action('woocommerce_before_calculate_totals', 'apply_wholesale_price_cart');
+
+// Mostrar campo en VARIACIONES de productos variables
+function wiwu_agregar_campo_precio_mayorista_a_variaciones($loop, $variation_data, $variation) {
+    woocommerce_wp_text_input(array(
+        'id' => 'wholesale_price[' . $variation->ID . ']',
+        'name' => 'wholesale_price[' . $variation->ID . ']',
+        'label' => __('Precio Mayorista', 'woocommerce'),
+        'type' => 'number',
+        'custom_attributes' => array(
+            'step' => '1',
+            'min' => '0'
+        ),
+        'value' => get_post_meta($variation->ID, 'wholesale_price', true),
+        'data_type' => 'price',
+    ));
+}
+add_action('woocommerce_variation_options_pricing', 'wiwu_agregar_campo_precio_mayorista_a_variaciones', 10, 3);
+
+// Guardar campo en VARIACIONES
+function wiwu_guardar_valor_campo_mayorista_variaciones($variation_id, $i) {
+    if (isset($_POST['wholesale_price'][$variation_id])) {
+        update_post_meta(
+            $variation_id,
+            'wholesale_price',
+            wc_format_decimal($_POST['wholesale_price'][$variation_id])
+        );
+    }
+}
+add_action('woocommerce_save_product_variation', 'wiwu_guardar_valor_campo_mayorista_variaciones', 10, 2);
