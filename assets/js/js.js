@@ -297,13 +297,14 @@ if($('.wiwu-woo-carousel-products .products').length > 0){
     })
 
 
-    $(".wiwu-load-more").on("click", function() {
 
-            var button = $(this);
-            var category = button.data("category");
-            var limit = button.data("limit");
-            var offset = button.data("offset");
-            var carousel = button.data("carousel");
+    $(document).on('click', '.wiwu-load-more', function() {
+        //alert("Click funcionando");
+        var button = $(this);
+        var category = button.data("category");
+        var limit = button.data("limit");
+        var offset = button.data("offset");
+        //var carousel = button.data("carousel");
             
             button.text("Cargando...").prop("disabled", true);
             
@@ -320,25 +321,24 @@ if($('.wiwu-woo-carousel-products .products').length > 0){
                
                     if(response.success && response.data) {
                         //$(".products").slick("slickAdd", response.data);
-                        if(offset === 0) {
-                            $(".products").html(response.data);
-                        } else {
-                            $(".products").append(response.data);
-                        }
-                        button.data("offset", offset + limit);
-                        
-                        if(response.data.length < limit) {
+                        $('.products').append(response.data);
+                        button.data('offset', offset + limit);
+                        //alert($(response.data).filter('.product').length)
+                        // Verificar si hay más productos
+                        if(response.data.length === 0 || $(response.data).filter('.product').length < limit) {
                             button.hide();
                         }
                      } else {
-                        button.text("No hay más productos");
+                       button.hide();
+
+                        $('.wiwu-load-more-container').html('<p class="wiwu_text">No hay más productos de esta categoria</p>');
                     } 
                     button.text("Ver más").prop("disabled", false);
                 },
                 error: function() {
                     button.text("Error al cargar").prop("disabled", false);
                 }
-            });
+            }); 
         });
     
         /* =======================================================================================
@@ -356,6 +356,65 @@ if($('.wiwu-woo-carousel-products .products').length > 0){
             );
         }
 
+
+     
+        $(document).on('click', '.wishlist-button', function(e) {
+            e.preventDefault();
+        
+            var button = $(this);
+            var product_id = button.data('product-id');
+            var action = button.hasClass('added') ? 'remove' : 'add';
+            
+            $.ajax({
+                url:  admin_url.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'wishlist_action',
+                    //nonce: wishlist_vars.nonce,
+                    product_id: product_id,
+                    action_type: action
+                },
+                success: function(response) {
+                    if (response) {
+                       /*  alert(response.success) */
+                        button.toggleClass('added');
+                    }
+                }
+            });
+        });
+
+
+        $('#wiwu-popup-btn-omitir').click(function(e) {
+
+            $('.sgpb-popup-dialog-main-div-theme-wrapper-6, .sgpb-theme-6-overlay').hide(); // Reemplaza YOURPOPUPID
+
+    document.cookie = "popupOmitido=true; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/";
+        });
+
+        // Verificar cookie antes de mostrar
+            function checkPopupCookie() {
+                return document.cookie.split(';').some((item) => item.trim() === 'popupOmitido=true');
+            }
+
+
+
+// Verificar la cookie antes de mostrar el popup
+function checkPopupCookie() {
+    var cookies = document.cookie.split(';');
+    for (var i = 0; i < cookies.length; i++) {
+        var cookie = cookies[i].trim();
+        if (cookie === 'popupOmitido=true') {
+            return false;
+        }
+    }
+    return true;
+}
+
+// Solo mostrar si no existe la cookie
+if (!checkPopupCookie()) {
+    $('.sgpb-popup-dialog-main-div-theme-wrapper-6, .sgpb-theme-6-overlay').hide();
+}
+        
 });
 
 

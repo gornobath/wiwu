@@ -16,6 +16,22 @@ function astra_child_enqueue_styles() {
 
 add_action('wp_enqueue_scripts', 'astra_child_enqueue_styles');
 
+add_action('admin_enqueue_scripts', 'astra_child_enqueue_admin_styles');
+function astra_child_enqueue_admin_styles() {
+    wp_enqueue_script(
+        'astra-child-admin-script', 
+        get_stylesheet_directory_uri() . '/assets/js/admin.js', 
+        array('jquery'), 
+        wp_get_theme()->get('Version'), 
+        true
+    );
+    
+    wp_localize_script('astra-child-admin-script', 'admin_url', array(
+        'ajax_url' => admin_url('admin-ajax.php'),
+        'nonce' => wp_create_nonce('wiwu-ajax-nonce')
+    ));
+}
+
 // Cargar el archivo functions-elementor.php si existe
 if ( file_exists( get_stylesheet_directory() . '/functions-elementor.php' ) ) :
     require_once get_stylesheet_directory() . '/functions-elementor.php';

@@ -541,7 +541,7 @@ function wiwu_mostrar_productos_categoria($atts) {
     $atts = shortcode_atts(
         array(
             'categoria' => '',
-            'limit' => 4
+            'limit' => 20
         ), 
         $atts, 
         'wiwu-productos-categoria'
@@ -559,6 +559,8 @@ function wiwu_mostrar_productos_categoria($atts) {
     
     $query = new WP_Query($args);
     
+    
+    
     if (function_exists('wiwu_mostrar_productos')) :
         return wiwu_mostrar_productos(
             $query,
@@ -571,12 +573,12 @@ function wiwu_mostrar_productos_categoria($atts) {
 }
 
 // Función AJAX para cargar más productos
-// add_action('wp_ajax_wiwu_load_more_products_categoria', 'wiwu_load_more_products_categoria');
-// add_action('wp_ajax_nopriv_wiwu_load_more_products_categoria', 'wiwu_load_more_products_categoria');
+add_action('wp_ajax_wiwu_load_more_products_categoria', 'wiwu_load_more_products_categoria');
+add_action('wp_ajax_nopriv_wiwu_load_more_products_categoria', 'wiwu_load_more_products_categoria');
+
 function wiwu_load_more_products_categoria() {
-    //echo 'Entre desde php con ajax';
     $category = sanitize_text_field($_POST['category']);
-    $limit = intval($_POST['limit']);
+    $limit = intval($_POST['limit']); // Este será 20 ahora
     $offset = intval($_POST['offset']);
     
     $args = array(
@@ -605,7 +607,7 @@ function wiwu_load_more_products_categoria() {
                 'field'    => 'slug',
                 'terms'    => $category,
             ),
-        ),
+        ), 
     );
     
     $query = new WP_Query($args);
@@ -623,6 +625,7 @@ function wiwu_load_more_products_categoria() {
             $output .= '<div class="product">';
             $output .= '<a href="' . esc_url(get_the_permalink()) . '">
                             <div class="wiwu-carprod-cont-img">
+                              <span class="wiwu-descuento-producto">'.wiwu_mostar_descuento_del_producto().'</span>
                                 <img src="' . esc_url(get_stylesheet_directory_uri() . '/images/' . $styleIconoCarrito) . '" alt="" class="wiwu-shoppingbag"/>
                                 ' . wp_kses_post(wiwu_custom_hover_product_images()) . '
                             </div>
@@ -639,6 +642,7 @@ function wiwu_load_more_products_categoria() {
     }
     
     wp_reset_postdata();
+    wp_die();
 }
 
 
@@ -651,13 +655,13 @@ function wiwu_load_more_products_categoria() {
 *  ======================================================================*/
 
 
-function wiwu_obtener_productos_por_categoria($categoria,$limite = 8){
+function wiwu_obtener_productos_por_categoria($categoria,$limite = 20){
     
     if(empty($categoria)) return '';
 
     $limite = absint($limite);
 
-    if($limite <= 0)  $limite = 8;
+    if($limite <= 0)  $limite = 20;
 
     $categoria_sanitizada = '';
     $categoria_sanitizada = sanitize_title($categoria);
@@ -701,6 +705,12 @@ function wiwu_obtener_productos_por_categoria($categoria,$limite = 8){
 function  wiwu_mostrar_productos($query, $carousel_id,$limite,$categoria){
     $output = '';
     $contadorIteracciones = 0;
+    
+    $cantidadDePaginasPorBusqueda = $query->max_num_pages;
+    $cantidadDeProductosPorBusqueda = $query->found_posts;
+
+    
+    
 
     if ($query->have_posts()):
         $output .= '<div class="wiwu-woo-products" id="' . esc_attr($carousel_id) . '">';
@@ -716,9 +726,11 @@ function  wiwu_mostrar_productos($query, $carousel_id,$limite,$categoria){
             $styleIconoCarrito = (!empty($productoEnElCarrito)) ? 'shopping-bag-activo.svg' : 'shopping-bag.svg';
             
             $output .= '<div class="product">';
+            $output .= do_shortcode('[wishlist_button]');
             $output .= '<a href="' . esc_url(get_the_permalink()) . '">
                             <div class="wiwu-carprod-cont-img">
                               <span class="wiwu-descuento-producto">'.wiwu_mostar_descuento_del_producto().'</span>
+                              
                                 <img src="' . esc_url(get_stylesheet_directory_uri() . '/images/' . $styleIconoCarrito) . '" alt="" class="wiwu-shoppingbag"/>
                                 ' . wp_kses_post(wiwu_custom_hover_product_images()) . '
                             </div>
@@ -734,11 +746,18 @@ function  wiwu_mostrar_productos($query, $carousel_id,$limite,$categoria){
         $output .= '</div>'; // Cierra el div de productos
         
         // Botón "Ver más"
-        $limite = 4;
-        if( $contadorIteracciones > $limite):
+        //$limite = 4;
+       /*  if( $cantidadDeProductosPorBusqueda > $limite):
             $output .= '<div class="wiwu-load-more-container" style="text-align: center; margin-top: 20px;">';
             $output .= '<button class="wiwu-load-more" data-category="' . esc_attr($categoria) . '" 
                         data-limit="' . esc_attr($limite) . '" data-offset="' . esc_attr($limite) . '" 
+                        data-carousel="' . esc_attr($carousel_id) . '">Ver más</button>';
+            $output .= '</div>';
+        endif; */
+        if($cantidadDeProductosPorBusqueda > $limite):
+            $output .= '<div class="wiwu-load-more-container" style="text-align: center; margin-top: 20px;">';
+            $output .= '<button class="wiwu-load-more" data-category="' . esc_attr($categoria) . '" 
+                        data-limit="20" data-offset="' . esc_attr($limite) . '" 
                         data-carousel="' . esc_attr($carousel_id) . '">Ver más</button>';
             $output .= '</div>';
         endif;
@@ -819,7 +838,7 @@ function wiwu_mostrar_productos_subcategoria($atts) {
     
     $atts = shortcode_atts(
         array(
-            'limit' => 4
+            'limit' => 20
         ), 
         $atts, 
         'wiwu-productos-categoria'
@@ -962,3 +981,119 @@ function wiwu_guardar_valor_campo_mayorista_variaciones($variation_id, $i) {
     }
 }
 add_action('woocommerce_save_product_variation', 'wiwu_guardar_valor_campo_mayorista_variaciones', 10, 2);
+
+
+/* ============================================================================ 
+*   WISHLIST
+*  ============================================================================ */
+
+// Registrar shortcodes y scripts
+add_action('init', 'wishlist_init');
+function wishlist_init() {
+    // Shortcode para el botón de wishlist
+    add_shortcode('wishlist_button', 'wishlist_button_shortcode');
+    // Shortcode para mostrar la lista de deseos
+    add_shortcode('wishlist_page', 'wishlist_page_shortcode');
+    
+    // Cargar JS y AJAX
+    add_action('wp_enqueue_scripts', 'wishlist_scripts');
+    add_action('wp_ajax_wishlist_action', 'wishlist_ajax_handler');
+    add_action('wp_ajax_nopriv_wishlist_action', 'wishlist_ajax_handler');
+}
+
+// Cargar JavaScript
+function wishlist_scripts() {
+   
+   /*  wp_enqueue_script('wishlist-js', get_stylesheet_directory_uri() . '/assets/js/wishlist.js', array('jquery'), '1.0', true);
+    wp_localize_script('wishlist-js', 'wishlist_vars', array(
+        'ajaxurl' => admin_url('admin-ajax.php'),
+        'nonce'   => wp_create_nonce('wishlist-nonce')
+    )); */
+}
+
+// Shortcode para el botón (usar en single-product.php o via shortcode [wishlist_button])
+function wishlist_button_shortcode() {
+    global $product;
+    $product_id = absint($product->get_id());
+    $wishlist = array();
+    
+    // Obtener wishlist del usuario o invitado
+    if (is_user_logged_in()) {
+        $user_id = get_current_user_id();
+        $wishlist = get_user_meta($user_id, 'user_wishlist', true) ?: array();
+    } else {
+        $wishlist = isset($_COOKIE['guest_wishlist']) ? json_decode(stripslashes($_COOKIE['guest_wishlist']), true) : array();
+    }
+    
+    $is_in_wishlist = in_array($product_id, $wishlist);
+    $class = $is_in_wishlist ? 'added' : '';
+
+
+    ob_start(); 
+       $iconoCorazonRojo = 'heart-activo.svg';
+       $iconoCorazonGris = 'heart.svg';
+
+       ?>
+                
+              
+    <button class="wishlist-button <?php echo $class; ?>" data-product-id="<?php echo esc_attr($product_id); ?>">
+        <?php echo '<span class="wiwu-wishlist">❤️</span>'; ?>
+       <!--  <?php
+                echo ' <img src="' . esc_url(get_stylesheet_directory_uri() . '/images/' . $iconoCorazonRojo) . '" alt="" class="wiwu-heart-rojo '. ($class =='added') ? 'added' : ''.'"/> ';
+                echo ' <img src="' . esc_url(get_stylesheet_directory_uri() . '/images/' . $iconoCorazonGris) . '" alt="" class="wiwu-heart-gris  '. ($class !='added') ? '' : 'added'.'"/> '; 
+        ?> -->
+    </button>
+    <?php
+    return ob_get_clean();
+}
+
+// Función AJAX para añadir/eliminar productos
+function wishlist_ajax_handler() {
+    //check_ajax_referer('wishlist-nonce', 'nonce');
+    
+    $product_id = intval($_POST['product_id']);
+    $action = sanitize_text_field($_POST['action_type']);
+    
+    if (is_user_logged_in()) {
+        // Usuario registrado: usar user_meta
+        $user_id = get_current_user_id();
+        $wishlist = get_user_meta($user_id, 'user_wishlist', true) ?: array();
+        
+        if ($action === 'add') {
+            if (!in_array($product_id, $wishlist)) {
+                $wishlist[] = $product_id;
+            }
+        } else {
+            $wishlist = array_diff($wishlist, array($product_id));
+        }
+        
+        update_user_meta($user_id, 'user_wishlist', $wishlist);
+    } else {
+        // Invitado: usar cookie (o localStorage vía JS)
+        $wishlist = isset($_COOKIE['guest_wishlist']) ? json_decode(stripslashes($_COOKIE['guest_wishlist']), true) : array();
+        
+        if ($action === 'add') {
+            if (!in_array($product_id, $wishlist)) {
+                $wishlist[] = $product_id;
+            }
+        } else {
+            $wishlist = array_diff($wishlist, array($product_id));
+        }
+        
+        setcookie('guest_wishlist', json_encode($wishlist), time() + (30 * DAY_IN_SECONDS), '/');
+    }
+    
+    wp_send_json_success(array(
+        'count' => count($wishlist),
+        'status' => $action
+    ));
+}
+
+add_action('user_register', 'migrate_guest_wishlist_to_user');
+function migrate_guest_wishlist_to_user($user_id) {
+    if (isset($_COOKIE['guest_wishlist'])) {
+        $wishlist = json_decode(stripslashes($_COOKIE['guest_wishlist']), true);
+        update_user_meta($user_id, 'user_wishlist', $wishlist);
+        setcookie('guest_wishlist', '', time() - 3600, '/'); // Borrar cookie
+    }
+}

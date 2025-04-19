@@ -68,7 +68,8 @@ function wiwu_enviar_email_registro_mayorista_a_admin($user_id) {
  * Notificar al usuario cuando su cuenta es aprobada
  */
 function wiwu_enviar_email_al_mayorista_aprovado($user_id) {
-    // Sanitize user ID
+    
+
     $message = '';
 
     // Get and sanitize status
@@ -88,71 +89,80 @@ function wiwu_enviar_email_al_mayorista_aprovado($user_id) {
     
     $blog_name = esc_html(get_bloginfo('name'));
     
-    if ($status === 'approved') {
-        $subject = esc_html__('Tu cuenta de mayorista ha sido aprobada', 'text-domain');
-        $message = wiwu_mensaje_email_mayorista_aprovado($user_id,$blog_name);
-    } elseif ($status === 'rejected') {
+    if ($status === 'rejected') {
         $subject = esc_html__('Tu cuenta de mayorista ha sido rechazada', 'text-domain');
         $message = wiwu_mensaje_email_mayorista_rechazado();
+        wp_mail(
+            sanitize_email($user->user_email),
+            $subject,
+            $message
+        );
     } else {
         return; // Invalid status
     }
 
     // Send email
-    wp_mail(
-        sanitize_email($user->user_email),
-        $subject,
-        $message
-    );
+   
 }
 
 add_action('profile_update', 'wiwu_enviar_email_al_mayorista_aprovado');
 
-function wiwu_mensaje_email_mayorista_aprovado($user_id,$blog_name){
-    $message = '';
-    $company = sanitize_text_field(get_user_meta($user_id, 'wholesale_company', true));
-    $first_name = sanitize_text_field(get_user_meta($user_id, 'first_name', true));
 
-    $message = sprintf(
-        esc_html__("Hola %s,\n\n", 'text-domain'),
-        $first_name
-    );
-    $message .= sprintf(
-        esc_html__("Nos complace informarte que tu registro como mayorista para %s ha sido aprobado.\n\n", 'text-domain'),
-        $company
-    );
-    /*$message .= esc_html__("Ahora puedes acceder a tu cuenta y disfrutar de los beneficios exclusivos para mayoristas.\n", 'text-domain');
-    $message .= sprintf(
-        esc_html__("Puedes iniciar sesión aquí: %s\n\n", 'text-domain'),
-        $login_url
-    ); */
+// Handle AJAX request
+add_action('wp_ajax_wiwu_mensaje_email_mayorista_aprovado', 'wiwu_handle_email_approval');
+function wiwu_handle_email_approval() {
+    // Verify nonce
+    if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'wiwu-ajax-nonce')) {
+        wp_send_json_error('Nonce verification failed');
+        wp_die();
+    }
 
-    $user = get_userdata(54);
-    $login_url = esc_url(wp_login_url());
-    $password_set_link = '';
+    if (!isset($_POST['idDestinatario'])) {
+        wp_send_json_error('ID de destinatario no proporcionado');
+        wp_die();
+    }
+
+    $id_user = absint(intval($_POST['idDestinatario']));
+    $user = get_userdata($id_user);
+
+    if (!$user) {
+        wp_send_json_error('Usuario no encontrado');
+        wp_die();
+    }
 
     $key = get_password_reset_key($user);
-    if (!is_wp_error($key)) {
-        $password_set_link = esc_url(network_site_url("wp-login.php?action=rp&key=$key&login=" . rawurlencode($user->user_login), 'login'));
+    
+    if (is_wp_error($key)) {
+        wp_send_json_error('Error al generar clave de restablecimiento');
+        wp_die();
     }
 
+    // Construir la URL para restablecer la contraseña
+    $reset_url = network_site_url("wp-login.php?action=rp&key=$key&login=" . rawurlencode($user->user_login), 'login');
+    
+    // Asunto del correo
+    $subject = '[' . get_bloginfo('name') . '] Restablecer tu contraseña';
+    
+    // Mensaje del correo
+    $message = 'Hola ' . $user->display_name . ",\n\n";
+    $message .= 'Se ha aprobado la suscripcion como actualizado tu perfil. Para establecer una nueva contraseña, visita el siguiente enlace:' . "\n\n";
+    $message .= $reset_url . "\n\n";
+    $message .= 'Si no solicitaste este cambio, ignora este correo.' . "\n";
+    
+    // Enviar el correo
+    $email_sent = wp_mail(
+        sanitize_email($user->user_email),
+        $subject,
+        $message
+    );
 
-    if (!empty($password_set_link)) {
-        $message .= esc_html__("Por favor, establece tu contraseña usando el siguiente enlace:\n", 'text-domain');
-        $message .= $password_set_link . "\n\n";
-        $message .= esc_html__("Después de establecer tu contraseña, podrás acceder a tu cuenta y disfrutar de los beneficios exclusivos para mayoristas.\n", 'text-domain');
+    if ($email_sent) {
+        wp_send_json_success('Correo enviado exitosamente');
     } else {
-        $message .= esc_html__("Ahora puedes acceder a tu cuenta y disfrutar de los beneficios exclusivos para mayoristas.\n", 'text-domain');
-        $message .= sprintf(
-            esc_html__("Puedes iniciar sesión aquí: %s\n\n", 'text-domain'),
-            $login_url
-        );
+        wp_send_json_error('Error al enviar el correo');
     }
-    $message .= esc_html__("Si tienes alguna pregunta, no dudes en contactarnos.\n\n", 'text-domain');
-    $message .= sprintf(
-        esc_html__("Atentamente,\n%s", 'text-domain'),
-        $blog_name);
-        return $message; 
+    
+    wp_die(); // Siempre termina con wp_die() en handlers AJAX
 }
 
 function wiwu_mensaje_email_mayorista_rechazado(){   
@@ -168,18 +178,22 @@ function wiwu_mensaje_email_mayorista_rechazado(){
 }
 
 function mostrar_informacion(){
-    $user = get_userdata(54);
+    $user = get_userdata(63);
     $login_url = esc_url(wp_login_url());
     $password_set_link = '';
-    $status = sanitize_text_field(get_user_meta(54, 'wholesale_account_status', true));
+   
 
     $key = get_password_reset_key($user);
     if (!is_wp_error($key)) {
         $password_set_link = esc_url(network_site_url("wp-login.php?action=rp&key=$key&login=" . rawurlencode($user->user_login), 'login'));
     }
-
-
     $message  = '';
+
+    $message .= esc_html__("Por favor, establece tu contraseña usando el siguiente enlace:\n", 'text-domain');
+    $message .= $password_set_link . "\n\n";
+    $message .= esc_html__("Después de establecer tu contraseña, podrás acceder a tu cuenta y disfrutar de los beneficios exclusivos para mayoristas.\n", 'text-domain');
+
+/* 
     if (!empty($password_set_link)) {
         $message .= esc_html__("Por favor, establece tu contraseña usando el siguiente enlace:\n", 'text-domain');
         $message .= $password_set_link . "\n\n";
@@ -190,8 +204,8 @@ function mostrar_informacion(){
             esc_html__("Puedes iniciar sesión aquí: %s\n\n", 'text-domain'),
             $login_url
         );
-    }
-    echo $status;
+    } */
+    echo $key;
 }
 
 //add_action( 'wp_footer', 'mostrar_informacion' );
