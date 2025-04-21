@@ -61,6 +61,18 @@ jQuery(function ($) {
    }); 
 
 
+   
+   $('.wiwu-header-cart-btn').on('mouseenter', function() {
+        $('.wiwu-header-cart-cont').addClass('wiwu-header-cart-mostrar')
+    }); 
+    $('.wiwu-header-cart').on('mouseleave', function() {
+        $('.wiwu-header-cart-cont').removeClass('wiwu-header-cart-mostrar')
+    }); 
+    $('.wiwu-cart-header-btn-cerrar').on('click', function() {
+        $('.wiwu-header-cart-cont').removeClass('wiwu-header-cart-mostrar')
+    }); 
+
+
    let estadoBotonMorrales = false;
    $('#wiwu-tienda-categoria-cont-botonera-boton-1').on('click',function(){
    

@@ -19,22 +19,22 @@ function wholesale_registration_form_shortcode() {
             foreach ($error_codes as $error_code) {
                 switch ($error_code) {
                     case 'empty_fields':
-                        echo '<p>Por favor completa todos los campos obligatorios.</p>';
+                        echo '<p class="wiwu-texto">Por favor completa todos los campos obligatorios.</p>';
                         break;
                     case 'email_invalid':
-                        echo '<p>El correo electrónico no es válido.</p>';
+                        echo '<p class="wiwu-texto">El correo electrónico no es válido.</p>';
                         break;
                     case 'email_exists':
-                        echo '<p>Este correo electrónico ya está registrado.</p>';
+                        echo '<p class="wiwu-texto">Este correo electrónico ya está registrado.</p>';
                         break;
                     case 'phone_invalid':
-                        echo '<p>El número de teléfono no es válido.</p>';
+                        echo '<p class="wiwu-texto">El número de teléfono no es válido.</p>';
                         break;
                     case 'rut_invalid':
-                        echo '<p>El RUT no es válido.</p>';
+                        echo '<p class="wiwu-texto">El RUT no es válido.</p>';
                         break;
                     default:
-                        echo '<p>Ocurrió un error durante el registro.</p>';
+                        echo '<p class="wiwu-texto">Ocurrió un error durante el registro.</p>';
                         break;
                 }
             }
@@ -182,7 +182,7 @@ function wholesale_registration_form_shortcode() {
         
         return ob_get_clean();
     } else {
-        return '<p>Ya estás registrado y has iniciado sesión.</p>';
+        return '<p class="wiwu-texto">Ya estás registrado y has iniciado sesión.</p>';
     }
 }
 add_shortcode('wholesale_registration_form', 'wholesale_registration_form_shortcode');

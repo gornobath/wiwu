@@ -56,6 +56,7 @@ p:last-of-type{
 	backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
     z-index: 13;
+    overflow-y: visible !important;
 }
 
 .wiwu-header-principal-desktop .elementor-nav-menu{
@@ -261,6 +262,13 @@ p:last-of-type{
 
 .wiwu-header-principal-desktop .menu-item-has-children:hover  .sub-menu.elementor-nav-menu--dropdown .elementor-nav-menu--dropdown{
 	display: block;
+}
+
+.wiwu-header-cart-cont{
+    z-index: 10 !important;
+    position: relative !important;
+    top: -100px;
+    right: -1200px;
 }
 
 .wiwu-header-cart-btn,
@@ -1438,7 +1446,7 @@ body .elementor-button{
 	.wiwu-header-cart-mostrar{
 		opacity :1;
 		visibility: visible;
-		right: -10px;
+		right: 0px;
 	}
 }
 
@@ -4604,10 +4612,29 @@ padding-bottom: 0;
     }
 }
 
+@media (max-width: 769px){
+    .sgpb-popup-dialog-main-div-theme-wrapper-6{
+        width: 80% !important;
+        left: -5% !important;
+        right: 0 !important;
+        margin: 0 auto;
+        max-width: 600px;
+    }
+}
+
 
 .sgpb-theme-6-content{
     box-shadow: unset !important;
 }
+
+
+@media (max-width: 769px){
+    .sgpb-theme-6-content{
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+}
+
 .wiwu-popup{
     width: 100%;
     display: flex;
@@ -4644,6 +4671,12 @@ padding-bottom: 0;
     justify-content: center;
     align-items: center;
     gap: 20px;
+}
+
+@media (max-width: 600px){
+    .wiwu-popup-parrafo-box{
+        width: 100%;
+    }
 }
 
 .wiwu-popup-parrafo-box p{
@@ -4698,4 +4731,21 @@ padding-bottom: 0;
     background-color: #ffffff;
     border-color: #ffffff !important;
     box-shadow: 0px 3px 6px #00000029;
+}
+
+.elementor-location-header{
+    overflow-x: clip !important;
+}
+
+
+.wiwu-texto{
+    margin-bottom: 0;
+    display: block;
+    width: 100%;
+    text-align: center;
+    font-family: "Poppins", Sans-serif;
+    color: #2e2e2e;
+    line-height: 1.2;
+    font-weight: 400;
+    padding: 10px;
 }
